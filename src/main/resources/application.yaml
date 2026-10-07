@@ -3,4 +3,4 @@ ktor:
     port: 8080
   application:
     modules:
-      - no.nav.tsm.RoutingKt.configureRouting
+      - no.nav.tsm.ApplicationKt.module
