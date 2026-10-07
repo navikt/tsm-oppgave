@@ -2,6 +2,7 @@
 .kotlin/
 build/
 **/build/
+!gradle/wrapper/gradle-wrapper.jar
 
 # Compiled class file
 *.class
