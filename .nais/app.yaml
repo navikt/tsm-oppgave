@@ -8,17 +8,6 @@ metadata:
 
 spec:
   port: 8080
-  replicas:
-    min: 1
-    max: 2
-    cpuThresholdPercentage: 90
-  resources:
-    limits:
-      memory: 1Gi
-    requests:
-      cpu: 30m
-      memory: 512Mi
-
   liveness:
     path: /internal/health/alive
   readiness:
@@ -33,7 +22,6 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
-
   accessPolicy:
     outbound:
       rules:
