@@ -9,5 +9,5 @@ sealed interface OppgaveClient {
         Unknown,
     }
 
-    suspend fun getOppgaveById(oppgaveId: String): Either<OppgaveErrors, Oppgave>
+    suspend fun getOppgaver(xCorrelationId: String): Either<OppgaveErrors, Oppgave>
 }

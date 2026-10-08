@@ -19,6 +19,9 @@ dependencies {
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
     implementation(ktorLibs.server.metrics.micrometer)
+    implementation(ktorLibs.client.callId)
+    implementation(ktorLibs.client.core)
+    implementation(ktorLibs.client.contentNegotiation)
     implementation(libs.arrow.core)
     implementation(libs.arrow.fx.coroutines)
 
