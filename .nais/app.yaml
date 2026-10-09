@@ -22,6 +22,10 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
+  azure:
+    application:
+      enabled: true
+      # TODO: Access policies added here?
   accessPolicy:
     outbound:
       rules:

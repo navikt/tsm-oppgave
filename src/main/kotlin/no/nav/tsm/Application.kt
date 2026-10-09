@@ -2,6 +2,7 @@ package no.nav.tsm
 
 import io.ktor.server.application.Application
 import no.nav.tsm.oppgave.configureOppgaveDependencies
+import no.nav.tsm.plugins.configureDependencies
 import no.nav.tsm.plugins.configureMonitoring
 
 fun main(args: Array<String>) {
@@ -9,6 +10,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    configureDependencies()
     configureMonitoring()
     configureOppgaveDependencies()
 }
