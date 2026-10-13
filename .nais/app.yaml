@@ -29,6 +29,9 @@ spec:
       allowAllUsers: true
       # TODO: Access policies added here?
   accessPolicy:
+    inbound:
+      rules:
+        - application: zara
     outbound:
       rules:
         - application: logging
