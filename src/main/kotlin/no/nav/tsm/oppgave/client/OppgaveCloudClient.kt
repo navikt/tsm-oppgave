@@ -70,9 +70,9 @@ class OppgaveCloudClient(
         }
     }
 
-    // TODO: kanskje vi må sende med en liste med fnr
+    // TODO: kanskje vi må sende med en liste med identer
     @WithSpan
-    override suspend fun getOppgaver(fnr: String): Either<OppgaveErrors, List<Oppgave>> {
+    override suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<Oppgave>> {
         val span = Span.current()
         val (accessToken) = this.getToken()
         val xCorrelationId = UUID.randomUUID().toString()
@@ -81,7 +81,7 @@ class OppgaveCloudClient(
             httpClient.get("${environment.external().oppgaveApi}/api/v1/oppgaver") {
                 header("Authorization", "Bearer $accessToken")
                 header("X-Correlation-ID", xCorrelationId)
-                parameter("aktoerId", fnr)
+                parameter("aktoerId", ident)
                 contentType(ContentType.Application.Json)
             }
 

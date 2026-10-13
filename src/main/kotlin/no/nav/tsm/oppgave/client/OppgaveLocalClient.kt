@@ -4,7 +4,7 @@ import arrow.core.Either
 import no.nav.tsm.oppgave.Oppgave
 import no.nav.tsm.oppgave.OppgaveErrors
 
-class OppgaveLocalClient(): OppgaveClient {
+class OppgaveLocalClient : OppgaveClient {
     override suspend fun getOppgave(
         oppgaveId: Int,
         xCorrelationId: String
@@ -12,7 +12,7 @@ class OppgaveLocalClient(): OppgaveClient {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getOppgaver(fnr: String): Either<OppgaveErrors, List<Oppgave>> {
+    override suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<Oppgave>> {
         TODO("Not yet implemented")
     }
 

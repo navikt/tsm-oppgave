@@ -9,13 +9,13 @@ fun Route.oppgaveRoutes(
     oppgaveService: OppgaveService,
 ) {
     get("/api/oppgaver") {
-        val fnr = call.request.headers["fnr"]
+        val ident = call.request.headers["ident"]
             ?: return@get call.respond(
                 HttpStatusCode.BadRequest,
-                "Mangler fnr-header"
+                "Mangler ident-header"
             )
         either {
-            oppgaveService.getOppgaver(fnr).bind()
+            oppgaveService.getOppgaver(ident).bind()
         }.fold(
             ifLeft = { error ->
                  when {

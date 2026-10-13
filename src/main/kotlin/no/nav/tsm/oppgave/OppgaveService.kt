@@ -7,7 +7,7 @@ import no.nav.tsm.oppgave.client.OppgaveClient
 class OppgaveService(private val oppgaveClient: OppgaveClient) {
 
     @WithSpan
-    suspend fun getOppgaver(fnr: String): Either<OppgaveErrors, List<Oppgave>>  {
+    suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<Oppgave>>  {
         /*
         * sjekke tilganger
         * er det en saksbehandler
@@ -15,6 +15,6 @@ class OppgaveService(private val oppgaveClient: OppgaveClient) {
         * håndtere eventuelle oss problem
         * */
 
-        return oppgaveClient.getOppgaver(fnr)
+        return oppgaveClient.getOppgaver(ident)
     }
 }

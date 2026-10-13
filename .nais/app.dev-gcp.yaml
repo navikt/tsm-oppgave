@@ -9,6 +9,14 @@ spec:
     requests:
       cpu: 30m
       memory: 512Mi
+  azure:
+    application:
+      enabled: true
+      tenant: trygdeetaten.no
+      allowAllUsers: true
+  accessPolicy:
+    external:
+      - host: oppgave.dev-fss-pub.nais.io
   env:
     - name: OPPGAVE_API_URL
       value: https://oppgave.dev-fss-pub.nais.io
