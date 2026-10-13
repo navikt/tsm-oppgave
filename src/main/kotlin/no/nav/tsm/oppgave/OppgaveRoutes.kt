@@ -8,9 +8,14 @@ import io.ktor.server.routing.*
 fun Route.oppgaveRoutes(
     oppgaveService: OppgaveService,
 ) {
-    get("/oppgave") {
+    get("/api/oppgaver") {
+        val fnr = call.request.headers["fnr"]
+            ?: return@get call.respond(
+                HttpStatusCode.BadRequest,
+                "Mangler fnr-header"
+            )
         either {
-            oppgaveService.getOppgaver(call.parameters["fnr"]!!).bind()
+            oppgaveService.getOppgaver(fnr).bind()
         }.fold(
             ifLeft = { error ->
                  when {
