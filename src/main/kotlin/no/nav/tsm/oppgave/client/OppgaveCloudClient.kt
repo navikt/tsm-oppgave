@@ -31,15 +31,18 @@ class OppgaveCloudClient(
         install(ContentNegotiation) { jackson {} }
     }
 
-    data class OppgaveResponse(val id: String)
+    data class GetOppgaveResponse(val antallTreffTotalt: Int, val oppgaver: List<OppgaveResponse>)
 
     @WithSpan
-    override suspend fun getOppgaver(xCorrelationId: String): Either<OppgaveClient.OppgaveErrors, Oppgave> {
+    override suspend fun getOppgave(
+        oppgaveId: Int,
+        xCorrelationId: String
+    ): Either<OppgaveClient.OppgaveErrors, Oppgave> {
         val span = Span.current()
         val (accessToken) = this.getToken()
 
         val response =
-            httpClient.get("${environment.external().oppgaveApi}/api/v1/oppgaver") {
+            httpClient.get("${environment.external().oppgaveApi}/api/v1/oppgaver/$oppgaveId") {
                 header("Authorization", "Bearer $accessToken")
                 header("X-Correlation-ID", xCorrelationId)
                 contentType(ContentType.Application.Json)
@@ -48,7 +51,8 @@ class OppgaveCloudClient(
         return when {
             response.status.isSuccess() -> {
                 span.setAttribute("client.outcome", "ok")
-                mapToOppgave(response.body()).right()
+                val oppgave = response.body<OppgaveResponse>()
+                Oppgave(id = oppgave.id, journalpostId = oppgave.journalpostId).right()
             }
 
             response.status == HttpStatusCode.NotFound -> {
@@ -62,14 +66,52 @@ class OppgaveCloudClient(
                 OppgaveClient.OppgaveErrors.Unknown.left()
             }
         }
-
     }
 
-    private fun mapToOppgave(oppgave: OppgaveResponse): Oppgave {
-        return Oppgave(
-            id = oppgave.id,
-        )
+    @WithSpan
+    override suspend fun getOppgaver(xCorrelationId: String): Either<OppgaveClient.OppgaveErrors, List<Oppgave>> {
+        val span = Span.current()
+        val (accessToken) = this.getToken()
+
+        val response =
+            httpClient.get("${environment.external().oppgaveApi}/api/v1/oppgaver") {
+                header("Authorization", "Bearer $accessToken")
+                header("X-Correlation-ID", xCorrelationId)
+                contentType(ContentType.Application.Json)
+            }
+
+        return when {
+            response.status.isSuccess() -> {
+                span.setAttribute("client.outcome", "ok")
+                val oppgaver = response.body<GetOppgaveResponse>().oppgaver
+                mapToOppgave(oppgaver).right()
+            }
+
+            response.status == HttpStatusCode.NotFound -> {
+                span.setAttribute("client.outcome", "not-found")
+                OppgaveClient.OppgaveErrors.NotFound.left()
+            }
+
+            else -> {
+                span.setAttribute("client.outcome", response.status.toString())
+                logger.error("oppgave-api responded with status ${response.status}")
+                OppgaveClient.OppgaveErrors.Unknown.left()
+            }
+        }
     }
 
-    private suspend fun getToken() = texasClient.entraIdToken("tsm", "zara")
+    @WithSpan
+    override suspend fun createOppgave(oppgave: Oppgave): Either<OppgaveClient.OppgaveErrors, Oppgave> {
+        val span = Span.current()
+        TODO()
+    }
+
+    private fun mapToOppgave(oppgaver: List<OppgaveResponse>): List<Oppgave> {
+        return oppgaver.map { Oppgave(
+            id = it.id,
+            journalpostId = it.journalpostId,
+        ) }
+    }
+
+    private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave")
 }

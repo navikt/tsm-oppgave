@@ -31,3 +31,5 @@ spec:
       rules:
         - application: logging
           namespace: nais-system
+        - application: oppgave
+          namespace: oppgavehandtering

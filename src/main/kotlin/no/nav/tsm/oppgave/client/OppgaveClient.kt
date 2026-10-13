@@ -7,7 +7,13 @@ sealed interface OppgaveClient {
     enum class OppgaveErrors {
         NotFound,
         Unknown,
+        Unauthorized,
+        Conflict,
     }
 
-    suspend fun getOppgaver(xCorrelationId: String): Either<OppgaveErrors, Oppgave>
+    suspend fun getOppgave(oppgaveId: Int, xCorrelationId: String): Either<OppgaveErrors, Oppgave>
+
+    suspend fun getOppgaver(xCorrelationId: String): Either<OppgaveErrors, List<Oppgave>>
+
+    suspend fun createOppgave(oppgave: Oppgave): Either<OppgaveErrors, Oppgave>
 }
