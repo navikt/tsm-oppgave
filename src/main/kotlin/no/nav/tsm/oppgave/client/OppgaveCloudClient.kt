@@ -19,6 +19,8 @@ import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.oppgave.Oppgave
+import no.nav.tsm.oppgave.OppgaveErrors
+import java.util.UUID
 
 class OppgaveCloudClient(
     @Named("RetryHttpClient") httpClient: HttpClient,
@@ -37,7 +39,7 @@ class OppgaveCloudClient(
     override suspend fun getOppgave(
         oppgaveId: Int,
         xCorrelationId: String
-    ): Either<OppgaveClient.OppgaveErrors, Oppgave> {
+    ): Either<OppgaveErrors, Oppgave> {
         val span = Span.current()
         val (accessToken) = this.getToken()
 
@@ -57,26 +59,29 @@ class OppgaveCloudClient(
 
             response.status == HttpStatusCode.NotFound -> {
                 span.setAttribute("client.outcome", "not-found")
-                OppgaveClient.OppgaveErrors.NotFound.left()
+                OppgaveErrors.NotFound.left()
             }
 
             else -> {
                 span.setAttribute("client.outcome", response.status.toString())
                 logger.error("oppgave-api responded with status ${response.status}")
-                OppgaveClient.OppgaveErrors.Unknown.left()
+                OppgaveErrors.Unknown.left()
             }
         }
     }
 
+    // TODO: kanskje vi må sende med en liste med fnr
     @WithSpan
-    override suspend fun getOppgaver(xCorrelationId: String): Either<OppgaveClient.OppgaveErrors, List<Oppgave>> {
+    override suspend fun getOppgaver(fnr: String): Either<OppgaveErrors, List<Oppgave>> {
         val span = Span.current()
         val (accessToken) = this.getToken()
+        val xCorrelationId = UUID.randomUUID().toString()
 
         val response =
             httpClient.get("${environment.external().oppgaveApi}/api/v1/oppgaver") {
                 header("Authorization", "Bearer $accessToken")
                 header("X-Correlation-ID", xCorrelationId)
+                parameter("aktoerId", fnr)
                 contentType(ContentType.Application.Json)
             }
 
@@ -89,19 +94,29 @@ class OppgaveCloudClient(
 
             response.status == HttpStatusCode.NotFound -> {
                 span.setAttribute("client.outcome", "not-found")
-                OppgaveClient.OppgaveErrors.NotFound.left()
+                OppgaveErrors.NotFound.left()
+            }
+
+            response.status == HttpStatusCode.Unauthorized -> {
+                span.setAttribute("client.outcome", "Unauthorized")
+                OppgaveErrors.Unauthorized.left()
+            }
+
+            response.status == HttpStatusCode.BadRequest -> {
+                span.setAttribute("client.outcome", "BadRequest")
+                OppgaveErrors.BadRequest.left()
             }
 
             else -> {
                 span.setAttribute("client.outcome", response.status.toString())
                 logger.error("oppgave-api responded with status ${response.status}")
-                OppgaveClient.OppgaveErrors.Unknown.left()
+                OppgaveErrors.Unknown.left()
             }
         }
     }
 
     @WithSpan
-    override suspend fun createOppgave(oppgave: Oppgave): Either<OppgaveClient.OppgaveErrors, Oppgave> {
+    override suspend fun createOppgave(oppgave: Oppgave): Either<OppgaveErrors, Oppgave> {
         val span = Span.current()
         TODO()
     }

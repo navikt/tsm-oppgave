@@ -21,12 +21,15 @@ dependencies {
     implementation(ktorLibs.server.metrics.micrometer)
     implementation(ktorLibs.client.callId)
     implementation(ktorLibs.client.core)
+    implementation(ktorLibs.serialization.jackson3)
     implementation(ktorLibs.client.contentNegotiation)
+    implementation(ktorLibs.server.contentNegotiation)
     implementation(libs.arrow.core)
     implementation(libs.arrow.fx.coroutines)
 
     // TSM libraries
     implementation(tsmKtorLibs.core)
+    implementation(tsmKtorLibs.auth)
 
     // Monitoring and Logging
     implementation(libs.logback.classic)

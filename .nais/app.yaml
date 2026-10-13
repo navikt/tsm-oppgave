@@ -25,6 +25,8 @@ spec:
   azure:
     application:
       enabled: true
+      tenant: trygdeetaten.no
+      allowAllUsers: true
       # TODO: Access policies added here?
   accessPolicy:
     outbound:

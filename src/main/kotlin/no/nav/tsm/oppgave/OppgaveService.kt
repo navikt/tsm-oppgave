@@ -1,0 +1,20 @@
+package no.nav.tsm.oppgave
+
+import arrow.core.Either
+import io.opentelemetry.instrumentation.annotations.WithSpan
+import no.nav.tsm.oppgave.client.OppgaveClient
+
+class OppgaveService(private val oppgaveClient: OppgaveClient) {
+
+    @WithSpan
+    suspend fun getOppgaver(fnr: String): Either<OppgaveErrors, List<Oppgave>>  {
+        /*
+        * sjekke tilganger
+        * er det en saksbehandler
+        * er det m2m
+        * håndtere eventuelle oss problem
+        * */
+
+        return oppgaveClient.getOppgaver(fnr)
+    }
+}

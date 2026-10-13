@@ -1,13 +1,16 @@
 package no.nav.tsm.oppgave
 
 import io.ktor.server.application.Application
-import no.nav.tsm.ktor.di.dynamicDependencies
-import no.nav.tsm.oppgave.client.OppgaveCloudClient
-import no.nav.tsm.oppgave.client.OppgaveLocalClient
+import io.ktor.server.plugins.di.dependencies
+import io.ktor.server.routing.routing
+import no.nav.tsm.ktor.auth.entra.entraOnBehalfOf
 
-fun Application.configureOppgaveDependencies() {
-    dynamicDependencies {
-        cloud { provide(OppgaveCloudClient::class) }
-        local { provide(OppgaveLocalClient::class) }
+fun Application.configureOppgaveModule() {
+    val oppgaveService: OppgaveService by dependencies
+
+    routing {
+        entraOnBehalfOf {
+            oppgaveRoutes(oppgaveService)
+        }
     }
 }
