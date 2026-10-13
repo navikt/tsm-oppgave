@@ -1,4 +1,4 @@
-package no.nav.tsm.oppgave.client
+package no.nav.tsm.oppgave.client.model
 
 import java.time.LocalDate
 

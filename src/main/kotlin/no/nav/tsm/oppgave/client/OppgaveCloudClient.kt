@@ -18,8 +18,10 @@ import io.opentelemetry.instrumentation.annotations.WithSpan
 import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.oppgave.Oppgave
-import no.nav.tsm.oppgave.OppgaveErrors
+import no.nav.tsm.oppgave.client.model.OppgaveErrors
+import no.nav.tsm.oppgave.client.model.OppgaveResponse
+import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
+import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
 import java.util.UUID
 
 class OppgaveCloudClient(
@@ -39,7 +41,7 @@ class OppgaveCloudClient(
     override suspend fun getOppgave(
         oppgaveId: Int,
         xCorrelationId: String
-    ): Either<OppgaveErrors, Oppgave> {
+    ): Either<OppgaveErrors, OppgaveResponse> {
         val span = Span.current()
         val (accessToken) = this.getToken()
 
@@ -53,8 +55,7 @@ class OppgaveCloudClient(
         return when {
             response.status.isSuccess() -> {
                 span.setAttribute("client.outcome", "ok")
-                val oppgave = response.body<OppgaveResponse>()
-                Oppgave(id = oppgave.id, journalpostId = oppgave.journalpostId).right()
+                response.body<OppgaveResponse>().right()
             }
 
             response.status == HttpStatusCode.NotFound -> {
@@ -72,7 +73,7 @@ class OppgaveCloudClient(
 
     // TODO: kanskje vi må sende med en liste med identer
     @WithSpan
-    override suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<Oppgave>> {
+    override suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<OppgaveResponse>> {
         val span = Span.current()
         val (accessToken) = this.getToken()
         val xCorrelationId = UUID.randomUUID().toString()
@@ -88,8 +89,7 @@ class OppgaveCloudClient(
         return when {
             response.status.isSuccess() -> {
                 span.setAttribute("client.outcome", "ok")
-                val oppgaver = response.body<GetOppgaveResponse>().oppgaver
-                mapToOppgave(oppgaver).right()
+                response.body<GetOppgaveResponse>().oppgaver.right()
             }
 
             response.status == HttpStatusCode.NotFound -> {
@@ -116,16 +116,9 @@ class OppgaveCloudClient(
     }
 
     @WithSpan
-    override suspend fun createOppgave(oppgave: Oppgave): Either<OppgaveErrors, Oppgave> {
+    override suspend fun createOppgave(oppgave: OpprettOppgaveRequest): Either<OppgaveErrors, OpprettOppgaveResponse> {
         val span = Span.current()
         TODO()
-    }
-
-    private fun mapToOppgave(oppgaver: List<OppgaveResponse>): List<Oppgave> {
-        return oppgaver.map { Oppgave(
-            id = it.id,
-            journalpostId = it.journalpostId,
-        ) }
     }
 
     private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave")

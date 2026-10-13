@@ -4,6 +4,7 @@ import arrow.core.raise.either
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import no.nav.tsm.oppgave.client.model.OppgaveErrors
 
 fun Route.oppgaveRoutes(
     oppgaveService: OppgaveService,

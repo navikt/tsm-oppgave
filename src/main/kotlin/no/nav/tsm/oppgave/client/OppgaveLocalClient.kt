@@ -1,22 +1,25 @@
 package no.nav.tsm.oppgave.client
 
 import arrow.core.Either
-import no.nav.tsm.oppgave.Oppgave
-import no.nav.tsm.oppgave.OppgaveErrors
+
+import no.nav.tsm.oppgave.client.model.OppgaveErrors
+import no.nav.tsm.oppgave.client.model.OppgaveResponse
+import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
+import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
 
 class OppgaveLocalClient : OppgaveClient {
     override suspend fun getOppgave(
         oppgaveId: Int,
         xCorrelationId: String
-    ): Either<OppgaveErrors, Oppgave> {
+    ): Either<OppgaveErrors, OppgaveResponse> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<Oppgave>> {
+    override suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<OppgaveResponse>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun createOppgave(oppgave: Oppgave): Either<OppgaveErrors, Oppgave> {
+    override suspend fun createOppgave(oppgave: OpprettOppgaveRequest): Either<OppgaveErrors, OpprettOppgaveResponse> {
         TODO("Not yet implemented")
     }
 }

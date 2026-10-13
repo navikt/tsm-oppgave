@@ -1,4 +1,4 @@
-package no.nav.tsm.oppgave
+package no.nav.tsm.oppgave.client.model
 
 enum class OppgaveErrors {
     NotFound,  // relevant for hele flyten - route, service, client
