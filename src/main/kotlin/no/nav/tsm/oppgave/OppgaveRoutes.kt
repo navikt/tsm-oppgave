@@ -14,6 +14,7 @@ fun Route.oppgaveRoutes(
     val logger = logger()
 
     get("/api/oppgaver") {
+        logger.info("Henter oppgaver")
         val ident = call.request.headers["ident"]
             ?: return@get call.respond(
                 HttpStatusCode.BadRequest,
