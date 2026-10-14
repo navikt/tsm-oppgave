@@ -21,6 +21,7 @@ dependencies {
     implementation(ktorLibs.server.metrics.micrometer)
     implementation(ktorLibs.client.callId)
     implementation(ktorLibs.client.core)
+    implementation(ktorLibs.client.apache5)
     implementation(ktorLibs.serialization.jackson3)
     implementation(ktorLibs.client.contentNegotiation)
     implementation(ktorLibs.server.contentNegotiation)
