@@ -12,9 +12,9 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    configureAuthentication()
     configureDependencies()
     configureMonitoring()
     configureOppgaveModule()
-    configureAuthentication()
     configureSerialization()
 }
