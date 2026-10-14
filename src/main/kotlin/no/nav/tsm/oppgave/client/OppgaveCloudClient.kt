@@ -86,6 +86,8 @@ class OppgaveCloudClient(
                 contentType(ContentType.Application.Json)
             }
 
+        logger.info("$xCorrelationId responded with status ${response.status}")
+
         return when {
             response.status.isSuccess() -> {
                 span.setAttribute("client.outcome", "ok")

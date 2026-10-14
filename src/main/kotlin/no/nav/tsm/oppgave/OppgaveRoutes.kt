@@ -5,10 +5,14 @@ import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.tsm.oppgave.client.model.OppgaveErrors
+import no.nav.tsm.ktor.logger
+import no.nav.tsm.ktor.teamLogger
 
 fun Route.oppgaveRoutes(
     oppgaveService: OppgaveService,
 ) {
+    val logger = logger()
+
     get("/api/oppgaver") {
         val ident = call.request.headers["ident"]
             ?: return@get call.respond(
@@ -21,9 +25,13 @@ fun Route.oppgaveRoutes(
             ifLeft = { error ->
                  when {
                     error == OppgaveErrors.NotFound -> {
+                        logger.info("Fant ikke oppgave for ident")
                         call.respond(message = "not Fund", status = HttpStatusCode.NotFound)
                     }
-                     else -> call.respond(message = "Internal Server Error", status = HttpStatusCode.InternalServerError)
+                     else -> {
+                         logger.error("Something went wrong when fetching oppgaver. Got error ${error}")
+                         call.respond(message = "Internal Server Error", status = HttpStatusCode.InternalServerError)
+                     }
                 }
             },
             ifRight = {
