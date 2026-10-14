@@ -17,6 +17,7 @@ import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.ktor.auth.texas.Texas
+import no.nav.tsm.ktor.auth.texas.TexasTarget
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.oppgave.client.model.OppgaveErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
@@ -123,5 +124,5 @@ class OppgaveCloudClient(
         TODO()
     }
 
-    private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave")
+    private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave", cluster = TexasTarget.DEV_FSS)
 }
