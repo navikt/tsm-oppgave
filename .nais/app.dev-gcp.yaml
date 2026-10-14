@@ -20,6 +20,8 @@ spec:
         - application: oppgave
           namespace: oppgavehandtering
           cluster: dev-fss
+      external:
+        - host: https://oppgave.dev-fss-pub.nais.io
   env:
     - name: OPPGAVE_API_URL
       value: https://oppgave.dev-fss-pub.nais.io
