@@ -23,6 +23,9 @@ spec:
       enabled: true
       runtime: java
   accessPolicy:
+    inbound:
+      rules:
+        - application: zara
     outbound:
       rules:
         - application: logging
