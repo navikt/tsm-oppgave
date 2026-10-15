@@ -25,3 +25,5 @@ spec:
   env:
     - name: OPPGAVE_API_URL
       value: https://oppgave.dev-fss-pub.nais.io
+    - name: OPPGAVE_API_CLUSTER
+      value: dev-fss

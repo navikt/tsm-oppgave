@@ -19,6 +19,8 @@ import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.auth.texas.TexasTarget
 import no.nav.tsm.ktor.logger
+import no.nav.tsm.ktor.nais.RuntimeCluster
+import no.nav.tsm.ktor.nais.getRuntimeCluster
 import no.nav.tsm.oppgave.client.model.OppgaveErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
@@ -47,7 +49,7 @@ class OppgaveCloudClient(
         val (accessToken) = this.getToken()
 
         val response =
-            httpClient.get("${environment.external().oppgaveApi}/api/v1/oppgaver/$oppgaveId") {
+            httpClient.get("${environment.external().oppgaveApi.url}/api/v1/oppgaver/$oppgaveId") {
                 header("Authorization", "Bearer $accessToken")
                 header("X-Correlation-ID", xCorrelationId)
                 contentType(ContentType.Application.Json)
@@ -124,5 +126,5 @@ class OppgaveCloudClient(
         TODO()
     }
 
-    private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave", cluster = TexasTarget.DEV_FSS)
+    private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave", cluster = environment.external().oppgaveApi.texasTargetCluster)
 }
