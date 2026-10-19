@@ -42,6 +42,7 @@ class SafCloudClient(
                 eksternReferanseId = eksternReferanseId
             )
         )
+        logger.info("Debug query: $query")
         val response = httpClient.post(environment.external().safApi.url) {
             header("Authorization", "Bearer $accessToken")
             setBody(query)
@@ -103,5 +104,6 @@ private data class GraphQLError(
 )
 
 private data class GraphQLExtensions(
-    val code: String
+    val code: String? = null,
+    val classification: String? = null
 )
