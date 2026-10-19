@@ -51,13 +51,17 @@ class SafCloudClient(
         logger.info("Respnse body ${response.bodyAsText()}")
         val body = response.body<GraphQLResponse>()
 
-
         if (body.errors?.isNotEmpty() == true) {
             body.errors.forEach {
                 return when {
                     it.extensions.code == "forbidden" -> {
                         span.setAttribute("client.outcome", "forbidden")
                         SafErrors.FORBIDDEN.left()
+                    }
+
+                    it.extensions.code == "not_found" -> {
+                        span.setAttribute("client.outcome", "not found")
+                        SafErrors.NOT_FOUND.left()
                     }
 
                     else -> {
@@ -69,13 +73,13 @@ class SafCloudClient(
             }
         }
 
-        if (body.data == null) {
+        if ( body.data?.journalpost == null) {
             logger.error("No errors, but data is empty.")
             return SafErrors.UNKNOWN.left()
         }
 
         span.setAttribute("client.outcome", "ok")
-        return body.data.right()
+        return listOf(body.data.journalpost).right()
     }
 
     val JOURNALPOST_QUERY = $$"""
@@ -99,8 +103,12 @@ private data class GraphQLVariables(
 )
 
 private data class GraphQLResponse(
-    val data: List<Journalpost>?,
+    val data: GraphQLJournalPost?,
     val errors: List<GraphQLError>?
+)
+
+private data class GraphQLJournalPost(
+    val journalpost: Journalpost? = null
 )
 
 private data class GraphQLError(
