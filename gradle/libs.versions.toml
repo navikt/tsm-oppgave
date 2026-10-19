@@ -3,12 +3,19 @@ kotlin = "2.4.0"
 logback = "1.5.37"
 ktor = "3.6.0"
 arrow = "2.2.3"
+flyway = "13.3.0"
+postgres = "42.7.13"
 spotless = "8.10.0"
 
 [libraries]
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
+
+# Database
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+flyway-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 
 [plugins]
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }

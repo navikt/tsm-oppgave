@@ -4,6 +4,12 @@ import io.ktor.server.config.ApplicationConfig
 import no.nav.tsm.ktor.auth.texas.TexasTarget
 import no.nav.tsm.ktor.logger
 
+class PostgresConfig(
+    val jdbc: String,
+    val username: String,
+    val password: String,
+)
+
 class ExternalApi(
     val oppgaveApi: ExternalApiConfig
 )
@@ -14,11 +20,17 @@ class ExternalApiConfig(
 )
 
 class Environment (
+    val postgres: PostgresConfig,
     val external: () -> ExternalApi,
 )
 
 fun initializeEnvironment(config: ApplicationConfig): Environment {
     return Environment(
+        postgres = PostgresConfig(
+            jdbc = config.property("postgres.jdbc").getString(),
+            username = config.property("postgres.username").getString(),
+            password = config.property("postgres.password").getString(),
+        ),
         external = {
             ExternalApi(
                 oppgaveApi = ExternalApiConfig(

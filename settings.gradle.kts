@@ -2,6 +2,7 @@ rootProject.name = "tsm-oppgave"
 
 val ktorVersion = "3.6.0"
 val tsmKtorVersion = "1.3.0"
+val exposedVersion = "1.4.0"
 
 
 dependencyResolutionManagement {
@@ -13,6 +14,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("ktorLibs").from("io.ktor:ktor-version-catalog:${ktorVersion}")
         create("tsmKtorLibs").from("no.nav.tsm:ktor-version-catalog:${tsmKtorVersion}")
+        create("exposedLibs").from("org.jetbrains.exposed:exposed-version-catalog:${exposedVersion}")
     }
 }
 

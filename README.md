@@ -25,6 +25,8 @@ To build or run the project, use one of the following tasks:
 | `./gradlew build` | Build the project |
 | `./gradlew run`   | Run the server    |
 
+For local development, run `./gradlew runLocal`. 
+
 If the server starts successfully, you'll see the following output:
 
 ```

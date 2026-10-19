@@ -32,6 +32,14 @@ dependencies {
     implementation(tsmKtorLibs.core)
     implementation(tsmKtorLibs.auth)
 
+    // Database
+    implementation(libs.flyway.postgres)
+    implementation(libs.flyway.core)
+    implementation(libs.postgresql)
+    implementation(exposedLibs.core)
+    implementation(exposedLibs.jdbc)
+    implementation(exposedLibs.json)
+
     // Monitoring and Logging
     implementation(libs.logback.classic)
 
@@ -49,6 +57,10 @@ tasks {
     }
 }
 
+tasks.register<Exec>("preRunLocal") {
+    group = "application"
+    commandLine("./scripts/pre-dev.sh")
+}
 
 tasks.register<JavaExec>("runLocal") {
     description = "Running the application localy"
@@ -58,4 +70,6 @@ tasks.register<JavaExec>("runLocal") {
 
     args("-config=application-local.conf")
     jvmArgs("-Dio.ktor.development=true", "-Dlogback.configurationFile=logback-local.xml")
+
+    dependsOn("preRunLocal")
 }
