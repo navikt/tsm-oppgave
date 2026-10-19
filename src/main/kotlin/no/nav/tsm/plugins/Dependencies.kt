@@ -12,6 +12,7 @@ import no.nav.tsm.ktor.di.dynamicDependencies
 import no.nav.tsm.oppgave.OppgaveService
 import no.nav.tsm.oppgave.client.OppgaveCloudClient
 import no.nav.tsm.oppgave.client.OppgaveLocalClient
+import no.nav.tsm.saf.SafService
 import no.nav.tsm.saf.client.SafCloudClient
 import no.nav.tsm.saf.client.SafLocalClient
 
@@ -36,6 +37,7 @@ fun Application.configureDependencies() {
         }
         provide<Environment> { initializeEnvironment(config) }
         provide(OppgaveService::class)
+        provide(SafService::class)
     }
 }
 
