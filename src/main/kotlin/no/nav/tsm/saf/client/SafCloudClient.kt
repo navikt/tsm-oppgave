@@ -9,6 +9,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.jackson3.jackson
@@ -46,9 +47,9 @@ class SafCloudClient(
             setBody(query)
             contentType(ContentType.Application.Json)
         }
-
+        logger.info("Respnse body ${response.bodyAsText()}")
         val body = response.body<GraphQLResponse>()
-        logger.info(body.toString())
+
 
         if (body.errors?.isNotEmpty() == true) {
             body.errors.forEach {
