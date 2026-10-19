@@ -3,6 +3,7 @@ package no.nav.tsm
 import io.ktor.server.application.Application
 import no.nav.tsm.oppgave.configureOppgaveModule
 import no.nav.tsm.plugins.configureAuthentication
+import no.nav.tsm.plugins.configureDatabase
 import no.nav.tsm.plugins.configureDependencies
 import no.nav.tsm.plugins.configureMonitoring
 import no.nav.tsm.plugins.configureSerialization
@@ -17,4 +18,5 @@ fun Application.module() {
     configureMonitoring()
     configureOppgaveModule()
     configureSerialization()
+    configureDatabase()
 }

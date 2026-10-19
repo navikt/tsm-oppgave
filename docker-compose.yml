@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: tsm-oppgave-postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tsm-oppgave
+    ports:
+      - "5434:5432"
