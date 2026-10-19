@@ -2,7 +2,7 @@ rootProject.name = "tsm-oppgave"
 
 val ktorVersion = "3.6.0"
 val tsmKtorVersion = "1.3.0"
-val exposedVersion = "1.4.0"
+val exposedVersion = "1.5.1"
 
 
 dependencyResolutionManagement {
@@ -27,6 +27,6 @@ pluginManagement {
 }
 
 plugins {
-    id("io.github.ben-manes.versions.settings") version "0.61.0"
+    id("io.github.ben-manes.versions.settings") version "0.66.0"
 }
 
