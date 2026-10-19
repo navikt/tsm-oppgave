@@ -11,7 +11,8 @@ class PostgresConfig(
 )
 
 class ExternalApi(
-    val oppgaveApi: ExternalApiConfig
+    val oppgaveApi: ExternalApiConfig,
+    val safApi: ExternalApiConfig
 )
 
 class ExternalApiConfig(
@@ -36,6 +37,10 @@ fun initializeEnvironment(config: ApplicationConfig): Environment {
                 oppgaveApi = ExternalApiConfig(
                     url = config.property("external.oppgaveApi.url").getString(),
                     texasTargetCluster = getTexasTarget(config.property("external.oppgaveApi.texasTargetCluster").getString())
+                ),
+                safApi = ExternalApiConfig(
+                    url = config.property("external.safApi.url").getString(),
+                    texasTargetCluster = getTexasTarget(config.property("external.safApi.texasTargetCluster").getString())
                 )
             )
         }
