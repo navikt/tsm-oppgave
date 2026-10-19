@@ -1,4 +1,6 @@
 spec:
+  ingresses:
+    - https://tsm-oppgave.intern.dev.nav.no
   replicas:
     min: 1
     max: 2
