@@ -69,12 +69,17 @@ class SafCloudClient(
             }
         }
 
+        if (body.data == null) {
+            logger.error("No errors, but data is empty.")
+            return SafErrors.UNKNOWN.left()
+        }
+
         span.setAttribute("client.outcome", "ok")
         return body.data.right()
     }
 
     val JOURNALPOST_QUERY = $$"""
-        query($eksternReferanseId: eksternReferanseId!) {
+        query FindJournalpost($eksternReferanseId: String!) {
             journalpost(eksternReferanseId: $eksternReferanseId) {
                 journalpostId
             }
@@ -94,7 +99,7 @@ private data class GraphQLVariables(
 )
 
 private data class GraphQLResponse(
-    val data: List<Journalpost>,
+    val data: List<Journalpost>?,
     val errors: List<GraphQLError>?
 )
 
