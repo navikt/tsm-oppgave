@@ -9,6 +9,7 @@ import io.ktor.server.plugins.di.resolve
 import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.core.utils.initializeEnvironment
 import no.nav.tsm.ktor.di.dynamicDependencies
+import no.nav.tsm.oppgave.OppgaveRepository
 import no.nav.tsm.oppgave.OppgaveService
 import no.nav.tsm.oppgave.client.OppgaveCloudClient
 import no.nav.tsm.oppgave.client.OppgaveLocalClient
