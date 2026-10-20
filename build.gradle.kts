@@ -39,12 +39,16 @@ dependencies {
     implementation(exposedLibs.core)
     implementation(exposedLibs.jdbc)
     implementation(exposedLibs.json)
+    implementation(exposedLibs.kotlin.datetime)
 
     // Monitoring and Logging
     implementation(libs.logback.classic)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.testcontainers.postgresql)
     testImplementation(ktorLibs.server.testHost)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.kotest.assertions)
 }
 
 tasks {

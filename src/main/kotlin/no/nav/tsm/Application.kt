@@ -17,8 +17,8 @@ fun Application.module() {
     configureAuthentication()
     configureDependencies()
     configureMonitoring()
-    configureOppgaveModule()
-    configureSafModule()
     configureSerialization()
     configureDatabase()
+    configureSafModule()
+    configureOppgaveModule()
 }
