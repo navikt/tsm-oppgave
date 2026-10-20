@@ -3,6 +3,12 @@ package no.nav.tsm.core.utils
 import io.ktor.server.config.ApplicationConfig
 import no.nav.tsm.ktor.auth.texas.TexasTarget
 import no.nav.tsm.ktor.logger
+import no.nav.tsm.ktor.nais.RuntimeCluster
+import no.nav.tsm.ktor.nais.getRuntimeCluster
+
+class RuntimeConfig(
+    val cluster: RuntimeCluster
+)
 
 class PostgresConfig(
     val jdbc: String,
@@ -17,16 +23,19 @@ class ExternalApi(
 
 class ExternalApiConfig(
     val url: String,
-    val texasTargetCluster: TexasTarget? = null
 )
 
 class Environment (
+    val runtime: RuntimeConfig,
     val postgres: PostgresConfig,
     val external: () -> ExternalApi,
 )
 
 fun initializeEnvironment(config: ApplicationConfig): Environment {
     return Environment(
+        runtime = RuntimeConfig(
+            cluster = getRuntimeCluster()
+        ),
         postgres = PostgresConfig(
             jdbc = config.property("postgres.jdbc").getString(),
             username = config.property("postgres.username").getString(),
@@ -36,28 +45,23 @@ fun initializeEnvironment(config: ApplicationConfig): Environment {
             ExternalApi(
                 oppgaveApi = ExternalApiConfig(
                     url = config.property("external.oppgaveApi.url").getString(),
-                    texasTargetCluster = getTexasTarget(config.property("external.oppgaveApi.texasTargetCluster").getString())
                 ),
                 safApi = ExternalApiConfig(
                     url = config.property("external.safApi.url").getString(),
-                    texasTargetCluster = getTexasTarget(config.property("external.safApi.texasTargetCluster").getString())
                 )
             )
         }
     )
 }
 
-private fun getTexasTarget(target: String?): TexasTarget? {
+fun RuntimeCluster.toFssCluster(): TexasTarget {
     val logger = logger()
-    return when (target) {
-        "dev-gcp" -> TexasTarget.DEV
-        "prod-gcp" -> TexasTarget.PROD
-        "dev-fss" -> TexasTarget.DEV_FSS
-        "prod-fss" -> TexasTarget.PROD_FSS
-        null -> null
+    return when (this) {
+        RuntimeCluster.DEV -> TexasTarget.DEV_FSS
+        RuntimeCluster.PROD -> TexasTarget.PROD_FSS
         else -> {
-            logger.error("Mapping unsupported TexasTarget from env. Target is $target")
-            throw RuntimeException("Mapping unsupported TexasTarget from env. Target is $target")
+            logger.error("Mapping unsupported TexasTarget from env. Target is $this")
+            throw RuntimeException("Mapping unsupported TexasTarget from env. Target is $this")
         }
     }
 }

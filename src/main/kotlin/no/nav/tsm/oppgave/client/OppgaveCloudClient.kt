@@ -16,6 +16,7 @@ import io.ktor.server.plugins.di.annotations.*
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import no.nav.tsm.core.utils.Environment
+import no.nav.tsm.core.utils.toFssCluster
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.auth.texas.TexasTarget
 import no.nav.tsm.ktor.logger
@@ -126,5 +127,5 @@ class OppgaveCloudClient(
         TODO()
     }
 
-    private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave", cluster = environment.external().oppgaveApi.texasTargetCluster)
+    private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave", cluster = environment.runtime.cluster.toFssCluster())
 }

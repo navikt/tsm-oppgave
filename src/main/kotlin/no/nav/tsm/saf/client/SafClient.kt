@@ -6,5 +6,5 @@ import no.nav.tsm.saf.client.model.SafErrors
 
 sealed interface SafClient {
 
-    suspend fun getJournalpost(eksternReferanseId: String): Either<SafErrors, List<Journalpost>>
+    suspend fun getJournalpost(eksternReferanseId: String): Either<SafErrors, Journalpost>
 }

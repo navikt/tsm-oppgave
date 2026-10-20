@@ -9,13 +9,13 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.plugins.di.annotations.Named
 import io.opentelemetry.api.trace.Span
 import no.nav.tsm.core.utils.Environment
+import no.nav.tsm.core.utils.toFssCluster
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.saf.client.model.Journalpost
@@ -27,12 +27,13 @@ class SafCloudClient(
     private val environment: Environment,
 ): SafClient {
     private val logger = logger()
+    private val url = environment.external().safApi.url
 
     private val httpClient: HttpClient = httpClient.config {
         install(ContentNegotiation) { jackson {} }
     }
 
-    override suspend fun getJournalpost(eksternReferanseId: String): Either<SafErrors, List<Journalpost>> {
+    override suspend fun getJournalpost(eksternReferanseId: String): Either<SafErrors, Journalpost> {
         val span = Span.current()
         val (accessToken) = this.getToken()
 
@@ -42,30 +43,35 @@ class SafCloudClient(
                 eksternReferanseId = eksternReferanseId
             )
         )
-        logger.info("Debug query: $query")
-        val response = httpClient.post(environment.external().safApi.url) {
+        val response = httpClient.post(url) {
             header("Authorization", "Bearer $accessToken")
             setBody(query)
             contentType(ContentType.Application.Json)
         }
-        logger.info("Respnse body ${response.bodyAsText()}")
+
         val body = response.body<GraphQLResponse>()
 
         if (body.errors?.isNotEmpty() == true) {
             body.errors.forEach {
-                return when {
-                    it.extensions.code == "forbidden" -> {
+                return when (it.extensions.code) {
+                    "forbidden" -> {
                         span.setAttribute("client.outcome", "forbidden")
                         SafErrors.FORBIDDEN.left()
                     }
-
-                    it.extensions.code == "not_found" -> {
+                    "not_found" -> {
                         span.setAttribute("client.outcome", "not found")
                         SafErrors.NOT_FOUND.left()
                     }
-
+                    "bad_request" -> {
+                        span.setAttribute("client.outcome", "bad_request")
+                        SafErrors.BAD_REQUEST.left()
+                    }
+                    "server_error" -> {
+                        span.setAttribute("client.outcome", "server_error")
+                        SafErrors.SERVER_ERROR.left()
+                    }
                     else -> {
-                        span.setAttribute("client.outcome", "unknwn")
+                        span.setAttribute("client.outcome", "unknown")
                         logger.error("saf responded with unhandled error: ${it.message} and code ${it.extensions.code}")
                         SafErrors.UNKNOWN.left()
                     }
@@ -74,12 +80,13 @@ class SafCloudClient(
         }
 
         if ( body.data?.journalpost == null) {
+            span.setAttribute("client.outcome", "unknown")
             logger.error("No errors, but data is empty.")
             return SafErrors.UNKNOWN.left()
         }
 
         span.setAttribute("client.outcome", "ok")
-        return listOf(body.data.journalpost).right()
+        return body.data.journalpost.right()
     }
 
     val JOURNALPOST_QUERY = $$"""
@@ -90,7 +97,7 @@ class SafCloudClient(
         }
     """.trimIndent()
 
-    private suspend fun getToken() = texasClient.entraIdToken("teamdokumenthandtering", "saf", cluster = environment.external().safApi.texasTargetCluster)
+    private suspend fun getToken() = texasClient.entraIdToken("teamdokumenthandtering", "saf", cluster = environment.runtime.cluster.toFssCluster())
 }
 
 private data class GrapghQLBody(
