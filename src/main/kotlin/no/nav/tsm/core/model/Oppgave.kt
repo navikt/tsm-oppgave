@@ -41,18 +41,12 @@ sealed interface Oppgave {
 
     data class Manuell(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
-        val personident: String?,
         val beskrivelse: String,
-        val mappeId: Int,
-        val metadata: Map<String, String>?,
-        val orgnummer: String,
-        val tildeltEnhetsnr: String,
-        val behandlingsType: String = Behandlingskategori.ANY.verdi,
-        val behandlingstema: String = Behandlingskategori.ANY.verdi,
+        val behandlingsType: String = Behandlingskategori.MANUELL.verdi,
     ) : Oppgave {
         override val oppgavetype = Oppgavetype.BEH_EL_SYM
         override val prioritet = Prioritet.HOY
-        override val behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22
+        override val behandlesAvApplikasjon = BehandlesAvApplikasjon.SMM
     }
 
     data class Behandlingsdager(
@@ -83,13 +77,29 @@ sealed interface Oppgave {
         override val prioritet = Prioritet.NORM
         override val behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22
     }
+
+    data class Oppfolging(
+        override val oppgaveGrunnlag: OppgaveGrunnlag,
+        val personident: String?,
+        val beskrivelse: String,
+        val mappeId: Int,
+        val metadata: Map<String, String>?,
+        val orgnummer: String,
+        val tildeltEnhetsnr: String,
+        val behandlingsType: String = Behandlingskategori.ANY.verdi,
+        val behandlingstema: String = Behandlingskategori.ANY.verdi,
+    ) : Oppgave {
+        override val oppgavetype = Oppgavetype.BEH_EL_SYM
+        override val prioritet = Prioritet.HOY
+        override val behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22
+    }
 }
 
 enum class BehandlesAvApplikasjon {
-    SMD, // utenlanske
-    SMR, // nasjonale
-    FS22, // syfosmoppgave og syfosmmanuell -> gosys
-    SMM // syfosmmanuell-backend
+    SMD,
+    SMR,
+    FS22,
+    SMM
 }
 
 enum class Prioritet {
@@ -112,12 +122,8 @@ enum class TildeltEnhetsnr(val verdi: String) {
     BEHANDLINGSDAGER("")
 }
 
-enum class Beskrivelse(val beskrivelse: String) {
-    BEHANDLINGSDAGER( "Manuell behandling av sykmelding grunnet følgende regler: Sykmelding inneholder behandlingsdager (felt 4.4)."),
-    NASJONAL("Manuell registrering av sykmelding mottatt på papir")
-}
 enum class Oppgavetype {
-    JFR, // journalføringsoppgave, syk-dig-backend
-    BEH_EL_SYM, // behandle elektronisk sykmelding
-    FDR, // syfosmpapirmottak
+    JFR,
+    BEH_EL_SYM,
+    FDR,
 }
