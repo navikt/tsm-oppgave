@@ -4,7 +4,6 @@ import java.time.LocalDate
 
 data class OppgaveGrunnlag(
     val id: String,
-    val personident: String?,
     val journalpostId: String,
     val aktivDato: LocalDate,
     val fristFerdigstillelse: LocalDate?,
@@ -21,6 +20,7 @@ sealed interface Oppgave {
 
     data class Utenlandsk(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
+        val personident: String?,
         val behandlingstype: String = Behandlingskategori.UTLAND.verdi,
         val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi
     ) : Oppgave {
@@ -31,6 +31,7 @@ sealed interface Oppgave {
 
     data class Nasjonal(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
+        val personident: String?,
         val beskrivelse: String = "Manuell registrering av sykmelding mottatt på papir",
     ) : Oppgave {
         override val oppgavetype = Oppgavetype.JFR
@@ -40,6 +41,7 @@ sealed interface Oppgave {
 
     data class Manuell(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
+        val personident: String?,
         val beskrivelse: String,
         val mappeId: Int,
         val metadata: Map<String, String>?,
@@ -55,6 +57,7 @@ sealed interface Oppgave {
 
     data class Behandlingsdager(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
+        val personident: String?,
         val orgnummer: String,
         val metadata: Map<String, String>? = mapOf(),
         val behandlingstema: String = Behandlingskategori.BEHANDLINGSDAGER.verdi,
@@ -65,6 +68,18 @@ sealed interface Oppgave {
         val temagruppe: String = "ANY"
     ) : Oppgave {
         override val oppgavetype = Oppgavetype.BEH_EL_SYM
+        override val prioritet = Prioritet.NORM
+        override val behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22
+    }
+
+    data class Fordeling(
+        override val oppgaveGrunnlag: OppgaveGrunnlag,
+        val behandlingsType: String = Behandlingskategori.FORDELING.verdi,
+        val beskrivelse: String = "Registrer manuelt mottatt papirsykmelding. \n" +
+                "Når journalført på korrekt fødselsnummer: Åpne https://syk-dig.intern.dev.nav.no/registrer-sykmelding \n" +
+                "tast inn journalpost-ID, hent og opprett sykmelding. Den digitaliseres og legges automatisk inn i Infotrygd.,",
+    ) : Oppgave {
+        override val oppgavetype = Oppgavetype.FDR
         override val prioritet = Prioritet.NORM
         override val behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22
     }
@@ -88,6 +103,7 @@ enum class Behandlingskategori(val verdi: String) {
     UTLAND("ae0106"),
     BEHANDLINGSDAGER("ab0351"),
     MANUELL("ae0239"),
+    FORDELING("ae0106"),
     ANY("ANY"),
 }
 
