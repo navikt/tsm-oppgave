@@ -1,4 +1,6 @@
 spec:
+  ingresses:
+    - https://tsm-oppgave.intern.dev.nav.no
   replicas:
     min: 1
     max: 2
@@ -20,10 +22,18 @@ spec:
         - application: oppgave
           namespace: oppgavehandtering
           cluster: dev-fss
+        - application: saf
+          namespace: teamdokumenthandtering
+          cluster: dev-fss
       external:
         - host: oppgave.dev-fss-pub.nais.io
+        - host: saf-q2.dev-fss-pub.nais.io
   env:
     - name: OPPGAVE_API_URL
       value: https://oppgave.dev-fss-pub.nais.io
     - name: OPPGAVE_API_CLUSTER
+      value: dev-fss
+    - name: SAF_API_URL
+      value: https://saf-q2.dev-fss-pub.nais.io/graphql
+    - name: SAF_API_CLUSTER
       value: dev-fss

@@ -7,6 +7,7 @@ import no.nav.tsm.plugins.configureDatabase
 import no.nav.tsm.plugins.configureDependencies
 import no.nav.tsm.plugins.configureMonitoring
 import no.nav.tsm.plugins.configureSerialization
+import no.nav.tsm.saf.configureSafModule
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
@@ -17,6 +18,7 @@ fun Application.module() {
     configureDependencies()
     configureMonitoring()
     configureOppgaveModule()
+    configureSafModule()
     configureSerialization()
     configureDatabase()
 }
