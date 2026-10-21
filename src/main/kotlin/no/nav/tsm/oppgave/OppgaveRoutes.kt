@@ -16,36 +16,41 @@ fun Application.configureOppgaveRoutes() {
 
     routing {
         entraOnBehalfOf {
-            get("/api/oppgaver") {
-                logger.info("Henter oppgaver")
-                val ident = call.request.headers["ident"]
-                    ?: return@get call.respond(
-                        HttpStatusCode.BadRequest,
-                        "Mangler ident-header"
-                    )
-                either {
-                    oppgaveService.getOppgaver(ident).bind()
-                }.fold(
-                    ifLeft = { error ->
-                        when {
-                            error == OppgaveErrors.NotFound -> {
-                                logger.info("Fant ikke oppgave for ident")
-                                call.respond(message = "not Fund", status = HttpStatusCode.NotFound)
-                            }
+            route("/api"){
+                get("/oppgaver") {
+                    logger.info("Henter oppgaver")
+                    val ident = call.request.headers["ident"]
+                        ?: return@get call.respond(
+                            HttpStatusCode.BadRequest,
+                            "Mangler ident-header"
+                        )
+                    either {
+                        oppgaveService.getOppgaver(ident).bind()
+                    }.fold(
+                        ifLeft = { error ->
+                            when {
+                                error == OppgaveErrors.NotFound -> {
+                                    logger.info("Fant ikke oppgave for ident")
+                                    call.respond(message = "not Fund", status = HttpStatusCode.NotFound)
+                                }
 
-                            else -> {
-                                logger.error("Something went wrong when fetching oppgaver. Got error ${error}")
-                                call.respond(
-                                    message = "Internal Server Error",
-                                    status = HttpStatusCode.InternalServerError
-                                )
+                                else -> {
+                                    logger.error("Something went wrong when fetching oppgaver. Got error ${error}")
+                                    call.respond(
+                                        message = "Internal Server Error",
+                                        status = HttpStatusCode.InternalServerError
+                                    )
+                                }
                             }
+                        },
+                        ifRight = {
+                            call.respond(it)
                         }
-                    },
-                    ifRight = {
-                        call.respond(it)
-                    }
-                )
+                    )
+                }
+                post("/oppgave") {
+
+                }
             }
         }
     }

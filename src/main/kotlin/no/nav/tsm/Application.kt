@@ -19,6 +19,8 @@ fun Application.module() {
     configureMonitoring()
     configureSerialization()
     configureDatabase()
+
+    // Specific modules
     configureSafModule()
     configureOppgaveModule()
 }
