@@ -9,7 +9,9 @@ import no.nav.tsm.saf.client.model.SafErrors
 class SafService(private val safClient: SafClient) {
 
     @WithSpan
-    suspend fun getJournalpostByExternalRef(eksternReferanseId: String): Either<SafErrors, Journalpost> {
+    suspend fun getJournalpostByExternalRef(
+        eksternReferanseId: String
+    ): Either<SafErrors, Journalpost> {
         return safClient.getJournalpost(eksternReferanseId)
     }
 }

@@ -8,5 +8,3 @@ import no.nav.tsm.ktor.nais.NaisMonitoring
 fun Application.configureMonitoring() {
     install(NaisMonitoring) {}
 }
-
-

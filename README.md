@@ -1,41 +1,80 @@
 # tsm-oppgave
+Application for persisting oppgaver and store
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+## Technologies used
+* Kotlin
+* Ktor
+* Gradle
 
-Here are some useful links to get you started:
-
-* [Ktor Documentation](https://ktor.io/docs/home.html)
-* [Ktor GitHub page](https://github.com/ktorio/ktor)
-* [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). [Request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up).
-
-## Features
-
-Here's a list of features included in this project:
-
-| Name | Description |
-|------|-------------|
-
-## Building & Running
-
-To build or run the project, use one of the following tasks:
-
-| Task              | Description       |
-|-------------------|-------------------|
-| `./gradlew test`  | Run the tests     |
-| `./gradlew build` | Build the project |
-| `./gradlew run`   | Run the server    |
-
-For local development, run `./gradlew runLocal`. 
-
-If the server starts successfully, you'll see the following output:
-
+## Requirements for developing the application
+#### Java
+Make sure you have the Java JDK 25 installed
+You can check which version you have installed using this command:
+``` bash
+java -version
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+or install it: https://sdkman.io/
+
+#### Docker
+Make sure you have docker installed using this command:
+You can check which version you have installed using this command:
+``` bash
+docker --version
+```
+or install it: https://docs.docker.com/engine/install/
+
+#### Docker Compose
+Make sure you have docker compose installed using this command:
+You can check which version you have installed using this command:
+``` bash
+docker compose version
+```
+or install it: https://docs.docker.com/compose/install/
+
+
+### Building the application
+To build the application locally and run tests you can simply run
+``` bash
+./gradlew clean build
+ ```
+
+### Running the application locally
+Run in development to enable hot reloading and stubbed external dependencies:
+
+#### With Gradle and Docker Compose
+
+``` bash
+./gradlew runLocal
 ```
 
+#### With IntelliJ
+
+In IntelliJ go to the run the main function,
+then "Modify Run configuration..."
+then add `-Dio.ktor.development=true -config=application-local.conf` to the "Program arguments".
+
+
+### Finding new available dependencies
+``` bash
+./gradlew dependencyUpdates
+```
 
 ### Upgrading the Gradle wrapper version to latest
 ``` bash
 ./gradlew :wrapper --gradle-version latest
 ```
+
+## Contributing
+
+To get started, fork the repository and create a new branch.
+
+See details in [CONTRIBUTING.md](CONTRIBUTING.md)
+
+### Contact
+
+This project is maintained by [navikt/tsm](CODEOWNERS)
+
+Questions and/or feature requests? Please create an [issue](https://github.com/navikt/tsm-oppgave/issues)
+
+If you work in [@navikt](https://github.com/navikt) you can reach us at the Slack
+channel [#team-symfoni](https://nav-it.slack.com/archives/C07MY3KCDS5)

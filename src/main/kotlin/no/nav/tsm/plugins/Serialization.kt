@@ -1,10 +1,10 @@
 package no.nav.tsm.plugins
 
+import io.ktor.serialization.jackson3.*
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
-import io.ktor.serialization.jackson3.*
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 
 fun Application.configureSerialization() {
-    install(ContentNegotiation) { jackson {  } }
+    install(ContentNegotiation) { jackson {} }
 }
