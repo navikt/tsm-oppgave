@@ -21,6 +21,7 @@ object OpprettOppgaveTable : Table("opprett_oppgave") {
     val frist_ferdigstillelse = datetime("frist_ferdigstillelse").nullable()
     val prioritet = text("prioritet")
     val ekstern_referanse_id = text("ekstern_referanse_id").nullable()
+    val created = datetime("created")
     val oppgave_opprettet = datetime("oppgave_opprettet").nullable()
-    val oppgave_created = datetime("oppgave_created")
+    val oppgave_id = javaUUID("oppgave_id")
 }
