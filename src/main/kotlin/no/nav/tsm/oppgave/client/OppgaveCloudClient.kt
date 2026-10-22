@@ -4,13 +4,10 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import io.ktor.client.*
-import io.ktor.client.call.body
+import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.http.isSuccess
+import io.ktor.http.*
 import io.ktor.serialization.jackson3.*
 import io.ktor.server.plugins.di.annotations.*
 import io.opentelemetry.api.trace.Span
@@ -18,15 +15,12 @@ import io.opentelemetry.instrumentation.annotations.WithSpan
 import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.core.utils.toFssCluster
 import no.nav.tsm.ktor.auth.texas.Texas
-import no.nav.tsm.ktor.auth.texas.TexasTarget
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.ktor.nais.RuntimeCluster
-import no.nav.tsm.ktor.nais.getRuntimeCluster
 import no.nav.tsm.oppgave.client.model.OppgaveErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
-import java.util.UUID
+import java.util.*
 
 class OppgaveCloudClient(
     @Named("RetryHttpClient") httpClient: HttpClient,
@@ -40,40 +34,6 @@ class OppgaveCloudClient(
     }
 
     data class GetOppgaveResponse(val antallTreffTotalt: Int, val oppgaver: List<OppgaveResponse>)
-
-    @WithSpan
-    override suspend fun getOppgave(
-        oppgaveId: Int,
-        xCorrelationId: String
-    ): Either<OppgaveErrors, OppgaveResponse> {
-        val span = Span.current()
-        val (accessToken) = this.getToken()
-
-        val response =
-            httpClient.get("${environment.external().oppgaveApi.url}/api/v1/oppgaver/$oppgaveId") {
-                header("Authorization", "Bearer $accessToken")
-                header("X-Correlation-ID", xCorrelationId)
-                contentType(ContentType.Application.Json)
-            }
-
-        return when {
-            response.status.isSuccess() -> {
-                span.setAttribute("client.outcome", "ok")
-                response.body<OppgaveResponse>().right()
-            }
-
-            response.status == HttpStatusCode.NotFound -> {
-                span.setAttribute("client.outcome", "not-found")
-                OppgaveErrors.NotFound.left()
-            }
-
-            else -> {
-                span.setAttribute("client.outcome", response.status.toString())
-                logger.error("oppgave-api responded with status ${response.status}")
-                OppgaveErrors.Unknown.left()
-            }
-        }
-    }
 
     // TODO: kanskje vi må sende med en liste med identer
     @WithSpan

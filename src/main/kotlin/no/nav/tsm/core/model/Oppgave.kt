@@ -21,7 +21,7 @@ sealed interface Oppgave {
     data class Utenlandsk(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
         val personident: String?,
-        val behandlingstype: String = Behandlingskategori.UTLAND.verdi,
+        val behandlingstype: String = Behandlingstype.UTLAND.verdi,
         val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi
     ) : Oppgave {
         override val oppgavetype = Oppgavetype.JFR
@@ -39,14 +39,27 @@ sealed interface Oppgave {
         override val behandlesAvApplikasjon = BehandlesAvApplikasjon.SMR
     }
 
-    data class Manuell(
+    data class Tilbakedatering(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
         val beskrivelse: String,
-        val behandlingsType: String = Behandlingskategori.MANUELL.verdi,
-    ) : Oppgave {
+        val behandlingsType: String = Behandlingstype.TILBAKEDATERING.verdi,
+    )
+        : Oppgave {
         override val oppgavetype = Oppgavetype.BEH_EL_SYM
         override val prioritet = Prioritet.HOY
         override val behandlesAvApplikasjon = BehandlesAvApplikasjon.SMM
+    }
+
+    data class Fordeling(
+        override val oppgaveGrunnlag: OppgaveGrunnlag,
+        val behandlingsType: String?,
+        val beskrivelse: String = "Registrer manuelt mottatt papirsykmelding. \n" +
+                "Når journalført på korrekt fødselsnummer: Åpne https://syk-dig.intern.dev.nav.no/registrer-sykmelding \n" +
+                "tast inn journalpost-ID, hent og opprett sykmelding. Den digitaliseres og legges automatisk inn i Infotrygd.,",
+    ) : Oppgave {
+        override val oppgavetype = Oppgavetype.FDR
+        override val prioritet = Prioritet.NORM
+        override val behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22
     }
 
     data class Behandlingsdager(
@@ -54,8 +67,8 @@ sealed interface Oppgave {
         val personident: String?,
         val orgnummer: String,
         val metadata: Map<String, String>? = mapOf(),
-        val behandlingstema: String = Behandlingskategori.BEHANDLINGSDAGER.verdi,
-        val behandlingsType: String = Behandlingskategori.ANY.verdi,
+        val behandlingstema: String = Behandlingstema.BEHANDLINGSDAGER.verdi,
+        val behandlingsType: String = Behandlingstype.ANY.verdi,
         val beskrivelse: String = "Manuell behandling av sykmelding grunnet følgende regler: Sykmelding inneholder behandlingsdager (felt 4.4).",
         val mappeId: Int = 1,
         val tildeltEnhetsnr: String = "",
@@ -66,28 +79,16 @@ sealed interface Oppgave {
         override val behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22
     }
 
-    data class Fordeling(
-        override val oppgaveGrunnlag: OppgaveGrunnlag,
-        val behandlingsType: String = Behandlingskategori.FORDELING.verdi,
-        val beskrivelse: String = "Registrer manuelt mottatt papirsykmelding. \n" +
-                "Når journalført på korrekt fødselsnummer: Åpne https://syk-dig.intern.dev.nav.no/registrer-sykmelding \n" +
-                "tast inn journalpost-ID, hent og opprett sykmelding. Den digitaliseres og legges automatisk inn i Infotrygd.,",
-    ) : Oppgave {
-        override val oppgavetype = Oppgavetype.FDR
-        override val prioritet = Prioritet.NORM
-        override val behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22
-    }
-
     data class Oppfolging(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
         val personident: String?,
-        val beskrivelse: String,
-        val mappeId: Int,
-        val metadata: Map<String, String>?,
         val orgnummer: String,
+        val metadata: Map<String, String>?,
+        val behandlingstema: String = Behandlingstype.ANY.verdi,
+        val behandlingsType: String = Behandlingstype.ANY.verdi,
+        val beskrivelse: String,
+        val mappeId: Int = 1,
         val tildeltEnhetsnr: String,
-        val behandlingsType: String = Behandlingskategori.ANY.verdi,
-        val behandlingstema: String = Behandlingskategori.ANY.verdi,
     ) : Oppgave {
         override val oppgavetype = Oppgavetype.BEH_EL_SYM
         override val prioritet = Prioritet.HOY
@@ -109,12 +110,14 @@ enum class Prioritet {
     KRITISK,
 }
 
-enum class Behandlingskategori(val verdi: String) {
+enum class Behandlingstype(val verdi: String) {
     UTLAND("ae0106"),
-    BEHANDLINGSDAGER("ab0351"),
-    MANUELL("ae0239"),
-    FORDELING("ae0106"),
+    TILBAKEDATERING("ae0239"),
     ANY("ANY"),
+}
+
+enum class Behandlingstema(val verdi: String) {
+    BEHANDLINGSDAGER("ab0351"),
 }
 
 enum class TildeltEnhetsnr(val verdi: String) {

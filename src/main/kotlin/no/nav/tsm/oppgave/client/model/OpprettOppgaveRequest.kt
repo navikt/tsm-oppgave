@@ -2,23 +2,24 @@ package no.nav.tsm.oppgave.client.model
 
 import java.time.LocalDate
 
+
+// TODO: denne kan kanskje fjernes/endres på
 data class OpprettOppgaveRequest(
-    val eksternReferanseId: String? = null,
-    val aktoerId: String? = null,
-    val opprettetAvEnhetsnr: String? = "9999",
-    val beskrivelse: Beskrivelse? = null,
-    val behandlesAvApplikasjon: BehandlesAvApplikasjon = BehandlesAvApplikasjon.SMD,
-    val journalpostId: String? = null,
-    val tema: String? = "SYM",
-    val oppgavetype: Oppgavetype = Oppgavetype.JFR,
-    val prioritet: Prioritet = Prioritet.KRITISK,
+    val personident: String?,
+    val orgnr: String?,
+    val tildeltEnhetsnr: String?,
+    val opprettetAvEnhetsnr: String = "9999",
+    val journalpostId: String,
+    val behandlesAvApplikasjon: BehandlesAvApplikasjon?,
+    val beskrivelse: Beskrivelse?,
+    val tema: String = "SYM",
+    val behandlingstema: String,
+    val oppgavetype: Oppgavetype?,
+    val behandlingstype: String, // en av disse må være satt
     val aktivDato: LocalDate = LocalDate.now(),
-    val behandlingstype: String = Behandlingskategori.INGEN.verdi, // en av disse må være satt
-    val behandlingstema: String = Behandlingskategori.INGEN.verdi,
-    val fristFerdigstillelse: LocalDate? = null,
-    val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi,
-    val orgnr: String? = null,
-    val mappeId: Int? = null, // settes til 1 i behandlingsdager?
+    val fristFerdigstillelse: LocalDate?,
+    val eksternReferanseId: String?,
+    val prioritet: Prioritet = Prioritet.NORM,
 )
 
 enum class BehandlesAvApplikasjon {
@@ -39,7 +40,7 @@ enum class Behandlingskategori(val verdi: String) {
     UTLAND("ae0106"),
     BEHANDLINGSDAGER("ab0351"),
     MANUELL("ae0239"),
-    INGEN(""),
+    ANY("ANY"),
 }
 
 enum class TildeltEnhetsnr(val verdi: String) {

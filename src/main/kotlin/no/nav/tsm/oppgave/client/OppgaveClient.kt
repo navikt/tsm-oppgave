@@ -8,8 +8,6 @@ import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
 
 sealed interface OppgaveClient {
 
-    suspend fun getOppgave(oppgaveId: Int, xCorrelationId: String): Either<OppgaveErrors, OppgaveResponse>
-
     suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<OppgaveResponse>>
 
     suspend fun createOppgave(oppgave: OpprettOppgaveRequest): Either<OppgaveErrors, OpprettOppgaveResponse>
