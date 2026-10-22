@@ -1,6 +1,5 @@
-package no.nav.tsm.utils.core
+package no.nav.tsm.oppgave
 
-import no.nav.tsm.oppgave.OppgaveRepository
 import no.nav.tsm.utils.WithPostgresql
 import org.junit.Test
 
