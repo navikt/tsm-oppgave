@@ -16,6 +16,7 @@ CREATE TABLE opprett_oppgave
     frist_ferdigstillelse    TIMESTAMPTZ,
     prioritet                TEXT        NOT NULL,
     ekstern_referanse_id     TEXT,
+    created                  TIMESTAMPTZ NOT NULL,
     oppgave_opprettet        TIMESTAMPTZ,
-    oppgave_created          TIMESTAMPTZ NOT NULL
+    oppgave_id               UUID
 );

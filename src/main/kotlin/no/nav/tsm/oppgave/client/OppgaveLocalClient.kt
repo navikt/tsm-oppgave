@@ -12,7 +12,9 @@ class OppgaveLocalClient : OppgaveClient {
         TODO("Not yet implemented")
     }
 
-    override suspend fun createOppgave(oppgave: OpprettOppgaveRequest): Either<OppgaveErrors, OpprettOppgaveResponse> {
+    override suspend fun createOppgave(
+        oppgave: OpprettOppgaveRequest
+    ): Either<OppgaveErrors, OpprettOppgaveResponse> {
         TODO("Not yet implemented")
     }
 }

@@ -9,10 +9,8 @@ class OppgaveRepositoryTest : WithPostgresql() {
         runMigrations(true)
         connect()
     }
+
     val oppgaveRepository = OppgaveRepository()
 
-    @Test
-    fun `insert and get oppgave`() {
-
-    }
+    @Test fun `insert and get oppgave`() {}
 }

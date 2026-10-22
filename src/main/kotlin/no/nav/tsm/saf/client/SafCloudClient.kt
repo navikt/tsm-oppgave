@@ -25,7 +25,7 @@ class SafCloudClient(
     @Named("RetryHttpClient") httpClient: HttpClient,
     private val texasClient: Texas,
     private val environment: Environment,
-): SafClient {
+) : SafClient {
     private val logger = logger()
     private val url = environment.external().safApi.url
 
@@ -33,21 +33,23 @@ class SafCloudClient(
         install(ContentNegotiation) { jackson {} }
     }
 
-    override suspend fun getJournalpost(eksternReferanseId: String): Either<SafErrors, Journalpost> {
+    override suspend fun getJournalpost(
+        eksternReferanseId: String
+    ): Either<SafErrors, Journalpost> {
         val span = Span.current()
         val (accessToken) = this.getToken()
 
-        val query = GrapghQLBody(
-            query = JOURNALPOST_QUERY,
-            variables = GraphQLVariables(
-                eksternReferanseId = eksternReferanseId
+        val query =
+            GrapghQLBody(
+                query = JOURNALPOST_QUERY,
+                variables = GraphQLVariables(eksternReferanseId = eksternReferanseId),
             )
-        )
-        val response = httpClient.post(url) {
-            header("Authorization", "Bearer $accessToken")
-            setBody(query)
-            contentType(ContentType.Application.Json)
-        }
+        val response =
+            httpClient.post(url) {
+                header("Authorization", "Bearer $accessToken")
+                setBody(query)
+                contentType(ContentType.Application.Json)
+            }
 
         val body = response.body<GraphQLResponse>()
 
@@ -72,14 +74,16 @@ class SafCloudClient(
                     }
                     else -> {
                         span.setAttribute("client.outcome", "unknown")
-                        logger.error("saf responded with unhandled error: ${it.message} and code ${it.extensions.code}")
+                        logger.error(
+                            "saf responded with unhandled error: ${it.message} and code ${it.extensions.code}"
+                        )
                         SafErrors.UNKNOWN.left()
                     }
                 }
             }
         }
 
-        if ( body.data?.journalpost == null) {
+        if (body.data?.journalpost == null) {
             span.setAttribute("client.outcome", "unknown")
             logger.error("No errors, but data is empty.")
             return SafErrors.UNKNOWN.left()
@@ -89,41 +93,32 @@ class SafCloudClient(
         return body.data.journalpost.right()
     }
 
-    val JOURNALPOST_QUERY = $$"""
+    val JOURNALPOST_QUERY =
+        $$"""
         query FindJournalpost($eksternReferanseId: String!) {
             journalpost(eksternReferanseId: $eksternReferanseId) {
                 journalpostId
             }
         }
-    """.trimIndent()
+        """
+            .trimIndent()
 
-    private suspend fun getToken() = texasClient.entraIdToken("teamdokumenthandtering", "saf", cluster = environment.runtime.cluster.toFssCluster())
+    private suspend fun getToken() =
+        texasClient.entraIdToken(
+            "teamdokumenthandtering",
+            "saf",
+            cluster = environment.runtime.cluster.toFssCluster(),
+        )
 }
 
-private data class GrapghQLBody(
-    val query: String,
-    val variables: GraphQLVariables
-)
+private data class GrapghQLBody(val query: String, val variables: GraphQLVariables)
 
-private data class GraphQLVariables(
-    val eksternReferanseId: String,
-)
+private data class GraphQLVariables(val eksternReferanseId: String)
 
-private data class GraphQLResponse(
-    val data: GraphQLJournalPost?,
-    val errors: List<GraphQLError>?
-)
+private data class GraphQLResponse(val data: GraphQLJournalPost?, val errors: List<GraphQLError>?)
 
-private data class GraphQLJournalPost(
-    val journalpost: Journalpost? = null
-)
+private data class GraphQLJournalPost(val journalpost: Journalpost? = null)
 
-private data class GraphQLError(
-    val message: String,
-    val extensions: GraphQLExtensions
-)
+private data class GraphQLError(val message: String, val extensions: GraphQLExtensions)
 
-private data class GraphQLExtensions(
-    val code: String? = null,
-    val classification: String? = null
-)
+private data class GraphQLExtensions(val code: String? = null, val classification: String? = null)

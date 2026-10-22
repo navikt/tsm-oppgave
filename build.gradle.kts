@@ -1,6 +1,12 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import dev.detekt.gradle.Detekt
+import com.diffplug.gradle.spotless.SpotlessExtension
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(ktorLibs.plugins.ktor)
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.detekt)
 }
 
 group = "no.nav.tsm"
@@ -11,8 +17,11 @@ application {
 }
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain {
+        languageVersion.set(libs.versions.jvmVersion.map { JavaLanguageVersion.of(it) })
+    }
 }
+
 dependencies {
     // Ktor
     implementation(ktorLibs.server.config.yaml)
@@ -59,21 +68,54 @@ tasks {
             into("/")
         }
     }
-}
 
-tasks.register<Exec>("preRunLocal") {
-    group = "application"
-    commandLine("./scripts/pre-dev.sh")
-}
+    register<Exec>("preRunLocal") {
+        description = "Running the application locally"
+        group = "application"
+        commandLine("./scripts/pre-dev.sh")
+    }
 
-tasks.register<JavaExec>("runLocal") {
-    description = "Running the application localy"
-    group = "application"
-    mainClass.set("io.ktor.server.netty.EngineMain")
-    classpath = sourceSets["main"].runtimeClasspath
+    register<JavaExec>("runLocal") {
+        description = "Running the application locally"
+        group = "application"
+        mainClass.set("io.ktor.server.netty.EngineMain")
+        classpath = sourceSets["main"].runtimeClasspath
 
-    args("-config=application-local.conf")
-    jvmArgs("-Dio.ktor.development=true", "-Dlogback.configurationFile=logback-local.xml")
+        args("-config=application-local.conf")
+        jvmArgs(
+            "-Dio.ktor.development=true",
+            "-Dlogback.configurationFile=logback-local.xml",
+        )
 
-    dependsOn("preRunLocal")
+        dependsOn("preRunLocal")
+    }
+
+    configure<SpotlessExtension> {
+        kotlin { ktfmt(libs.versions.ktfmt.get()).kotlinlangStyle() }
+    }
+
+    check {
+        setDependsOn(dependsOn.filter { !it.toString().contains("detekt") })
+        dependsOn("spotlessApply")
+    }
+
+    withType<Detekt>().configureEach {
+        config.setFrom(file("detekt.yml"))
+        buildUponDefaultConfig = true
+
+        dependsOn("spotlessApply")
+    }
+
+    named<DependencyUpdatesTask>("dependencyUpdates") {
+        fun String.isNonStable(): Boolean {
+            val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { uppercase().contains(it) }
+            val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+            val isStable = stableKeyword || regex.matches(this)
+            return isStable.not()
+        }
+
+        rejectVersionIf {
+            candidate.version.isNonStable()
+        }
+    }
 }

@@ -17,12 +17,10 @@ fun createIntegrationEnvironment(postgres: PostgreSQLContainer) =
                 username = postgres.username,
                 password = postgres.password,
             ),
-        external = {ExternalApi(
-            oppgaveApi = ExternalApiConfig(
-                url = "http://localhost",
-            ),
-            safApi = ExternalApiConfig(
-                url = "http://localhost",
+        external = {
+            ExternalApi(
+                oppgaveApi = ExternalApiConfig(url = "http://localhost"),
+                safApi = ExternalApiConfig(url = "http://localhost"),
             )
-        )},
+        },
     )

@@ -8,14 +8,8 @@ import no.nav.tsm.saf.client.SafLocalClient
 
 fun Application.configureSafDependencies() {
     dynamicDependencies {
-        cloud {
-            provide(SafCloudClient::class)
-        }
-        local {
-            provide(SafLocalClient::class)
-        }
+        cloud { provide(SafCloudClient::class) }
+        local { provide(SafLocalClient::class) }
     }
-    dependencies {
-        provide(SafService::class)
-    }
+    dependencies { provide(SafService::class) }
 }

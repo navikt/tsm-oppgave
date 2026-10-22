@@ -8,12 +8,8 @@ import no.nav.tsm.oppgave.client.OppgaveLocalClient
 
 fun Application.configureOppgaveDependencies() {
     dynamicDependencies {
-        cloud {
-            provide(OppgaveCloudClient::class)
-        }
-        local {
-            provide(OppgaveLocalClient::class)
-        }
+        cloud { provide(OppgaveCloudClient::class) }
+        local { provide(OppgaveLocalClient::class) }
     }
     dependencies {
         provide(OppgaveService::class)

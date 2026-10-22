@@ -10,5 +10,7 @@ sealed interface OppgaveClient {
 
     suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<OppgaveResponse>>
 
-    suspend fun createOppgave(oppgave: OpprettOppgaveRequest): Either<OppgaveErrors, OpprettOppgaveResponse>
+    suspend fun createOppgave(
+        oppgave: OpprettOppgaveRequest
+    ): Either<OppgaveErrors, OpprettOppgaveResponse>
 }

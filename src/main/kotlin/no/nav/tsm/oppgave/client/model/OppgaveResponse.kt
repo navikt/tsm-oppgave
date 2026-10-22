@@ -2,7 +2,7 @@ package no.nav.tsm.oppgave.client.model
 
 import java.time.LocalDate
 
-data class OppgaveResponse (
+data class OppgaveResponse(
     val id: Int,
     val versjon: Int? = null,
     val tildeltEnhetsnr: String? = null,

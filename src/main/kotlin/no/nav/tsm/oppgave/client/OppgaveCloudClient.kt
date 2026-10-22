@@ -12,6 +12,7 @@ import io.ktor.serialization.jackson3.*
 import io.ktor.server.plugins.di.annotations.*
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
+import java.util.*
 import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.core.utils.toFssCluster
 import no.nav.tsm.ktor.auth.texas.Texas
@@ -20,13 +21,12 @@ import no.nav.tsm.oppgave.client.model.OppgaveErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
-import java.util.*
 
 class OppgaveCloudClient(
     @Named("RetryHttpClient") httpClient: HttpClient,
     private val texasClient: Texas,
     private val environment: Environment,
-): OppgaveClient {
+) : OppgaveClient {
     private val logger = logger()
 
     private val httpClient: HttpClient = httpClient.config {
@@ -82,10 +82,17 @@ class OppgaveCloudClient(
     }
 
     @WithSpan
-    override suspend fun createOppgave(oppgave: OpprettOppgaveRequest): Either<OppgaveErrors, OpprettOppgaveResponse> {
+    override suspend fun createOppgave(
+        oppgave: OpprettOppgaveRequest
+    ): Either<OppgaveErrors, OpprettOppgaveResponse> {
         val span = Span.current()
         TODO()
     }
 
-    private suspend fun getToken() = texasClient.entraIdToken("oppgavehandtering", "oppgave", cluster = environment.runtime.cluster.toFssCluster())
+    private suspend fun getToken() =
+        texasClient.entraIdToken(
+            "oppgavehandtering",
+            "oppgave",
+            cluster = environment.runtime.cluster.toFssCluster(),
+        )
 }
