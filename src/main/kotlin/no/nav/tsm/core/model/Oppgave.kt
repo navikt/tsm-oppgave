@@ -8,6 +8,8 @@ data class OppgaveGrunnlag(
     val aktivDato: LocalDate,
     val fristFerdigstillelse: LocalDate?,
     val eksternReferanseId: String?,
+    val personident: String,
+    val orgnummer: String,
     val opprettetAvEnhetsnr: String = "9999",
     val tema: String = "SYM",
 )
@@ -20,7 +22,6 @@ sealed interface Oppgave {
 
     data class Utenlandsk(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
-        val personident: String?,
         val behandlingstype: String = Behandlingstype.UTLAND.verdi,
         val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi,
     ) : Oppgave {
@@ -31,7 +32,6 @@ sealed interface Oppgave {
 
     data class Nasjonal(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
-        val personident: String?,
         val beskrivelse: String = "Manuell registrering av sykmelding mottatt på papir",
     ) : Oppgave {
         override val oppgavetype = Oppgavetype.JFR
@@ -64,8 +64,6 @@ sealed interface Oppgave {
 
     data class Behandlingsdager(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
-        val personident: String?,
-        val orgnummer: String,
         val metadata: Map<String, String>? = mapOf(),
         val behandlingstema: String = Behandlingstema.BEHANDLINGSDAGER.verdi,
         val behandlingsType: String = Behandlingstype.ANY.verdi,
@@ -82,8 +80,6 @@ sealed interface Oppgave {
 
     data class Oppfolging(
         override val oppgaveGrunnlag: OppgaveGrunnlag,
-        val personident: String?,
-        val orgnummer: String,
         val metadata: Map<String, String>?,
         val behandlingstema: String = Behandlingstype.ANY.verdi,
         val behandlingsType: String = Behandlingstype.ANY.verdi,
