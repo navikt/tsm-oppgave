@@ -15,43 +15,38 @@ enum class OppgaveKilde {
 enum class OppgaveFelles(
     val oppgaveType: Oppgavetype,
     val prioritet: Prioritet,
-    val behandlesAvApplikasjon: BehandlesAvApplikasjon?
+    val behandlesAvApplikasjon: BehandlesAvApplikasjon?,
 ) {
     Utenlandsk(
         oppgaveType = Oppgavetype.JFR,
         prioritet = Prioritet.NORM,
         behandlesAvApplikasjon = BehandlesAvApplikasjon.SMD,
     ),
-
     Nasjonal(
         oppgaveType = Oppgavetype.JFR,
         prioritet = Prioritet.HOY,
         behandlesAvApplikasjon = BehandlesAvApplikasjon.SMR,
     ),
-
     Tilbakedatering(
         oppgaveType = Oppgavetype.BEH_EL_SYM,
         prioritet = Prioritet.HOY,
         behandlesAvApplikasjon = BehandlesAvApplikasjon.SMM,
     ),
-
     Fordeling(
         oppgaveType = Oppgavetype.FDR,
         prioritet = Prioritet.NORM,
         behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22,
     ),
-
     Behandlingsdager(
         oppgaveType = Oppgavetype.FDR,
         prioritet = Prioritet.NORM,
         behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22,
     ),
-
     Oppfolging(
         oppgaveType = Oppgavetype.BEH_EL_SYM,
         prioritet = Prioritet.HOY,
         behandlesAvApplikasjon = BehandlesAvApplikasjon.FS22,
-    )
+    ),
 }
 
 sealed interface OppgaveRequest {
@@ -74,13 +69,11 @@ sealed interface OppgaveRequest {
 }
 
 sealed interface Oppgave {
-    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    val type: OppgaveKilde
+    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY) val type: OppgaveKilde
     val oppgaveFelles: OppgaveFelles
     val personident: String
     val eksternReferanseId: String?
     val beskrivelse: String
-
 
     data class Utenlandsk(
         override val eksternReferanseId: String?,
@@ -117,7 +110,7 @@ sealed interface Oppgave {
         override val personident: String,
         override val beskrivelse: String,
         override val eksternReferanseId: String?,
-        val behandlingstype: String
+        val behandlingstype: String,
     ) : Oppgave {
         override val type = OppgaveKilde.FORDELING
         override val oppgaveFelles = OppgaveFelles.Fordeling
@@ -178,7 +171,7 @@ enum class Behandlingstema(val verdi: String) {
 }
 
 enum class TildeltEnhetsnr(val verdi: String) {
-    UTLAND("0393"),
+    UTLAND("0393")
 }
 
 enum class Oppgavetype {
