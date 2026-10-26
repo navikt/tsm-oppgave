@@ -1,5 +1,5 @@
 package no.nav.tsm.oppgave
 
-import no.nav.tsm.core.model.OppgaveGrunnlag
+import no.nav.tsm.core.model.Oppgave
 
-class OppgaveMapper(oppgaveGrunnlag: OppgaveGrunnlag) {}
+class OppgaveMapper(oppgave: Oppgave) {}

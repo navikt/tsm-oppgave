@@ -23,5 +23,5 @@ object OpprettOppgaveTable : Table("opprett_oppgave") {
     val ekstern_referanse_id = text("ekstern_referanse_id").nullable()
     val created = datetime("created")
     val oppgave_opprettet = datetime("oppgave_opprettet").nullable()
-    val oppgave_id = javaUUID("oppgave_id")
+    val oppgave_id = javaUUID("oppgave_id").nullable()
 }
