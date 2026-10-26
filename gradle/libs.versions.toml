@@ -1,11 +1,38 @@
 [versions]
-kotlin = "2.4.0"
-logback = "1.5.37"
-ktor = "3.6.0"
+jvmVersion = "25"
+
+kotlin = "2.4.21"
+logback = "1.6.5"
+arrow = "2.2.3"
+flyway = "13.11.1"
+postgres = "42.7.14"
+
+
+testcontainers = "2.0.5"
+kotest-assertions = "6.2.6"
+
+detekt = "2.0.0-alpha.6"
+spotless = "8.10.4"
+ktfmt = "0.62"
+
 
 [libraries]
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
+
+# Database
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+flyway-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+
+# Testing
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
+
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+detekt = { id = "dev.detekt",  version.ref = "detekt" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
