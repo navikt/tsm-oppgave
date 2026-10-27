@@ -1,9 +1,9 @@
-package no.nav.tsm.oppgave
+package no.nav.tsm.api
 
 import io.ktor.server.application.Application
-import no.nav.tsm.oppgave.routes.configureOppgaveApi
+import no.nav.tsm.api.routes.configureOppgaveRoutes
 
 fun Application.configureOppgaveModule() {
     configureOppgaveDependencies()
-    configureOppgaveApi()
+    configureOppgaveRoutes()
 }

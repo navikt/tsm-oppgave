@@ -1,4 +1,4 @@
-package no.nav.tsm.oppgave
+package no.nav.tsm.api
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.di.*
