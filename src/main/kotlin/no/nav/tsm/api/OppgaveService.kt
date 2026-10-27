@@ -1,8 +1,8 @@
-package no.nav.tsm.oppgave
+package no.nav.tsm.api
 
 import arrow.core.Either
 import io.opentelemetry.instrumentation.annotations.WithSpan
-import no.nav.tsm.core.model.Oppgave
+import no.nav.tsm.core.model.OppgaveRequest
 import no.nav.tsm.oppgave.client.OppgaveClient
 import no.nav.tsm.oppgave.client.model.OppgaveErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
@@ -18,9 +18,7 @@ class OppgaveService(
     }
 
     @WithSpan
-    suspend fun insertOppgave(oppgave: Oppgave) {
-
+    suspend fun insertOppgave(oppgave: OppgaveRequest.Post) {
         oppgaveRepository.insert(oppgave)
-        // håndtere eventuelle greier?
     }
 }

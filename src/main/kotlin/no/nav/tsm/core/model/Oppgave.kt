@@ -10,6 +10,7 @@ enum class OppgaveKilde {
     FORDELING,
     BEHANDLINGSDAGER,
     OPPFOLGING,
+    INFOTRYGD,
 }
 
 enum class OppgaveFelles(
@@ -55,7 +56,7 @@ sealed interface OppgaveRequest {
     data class Post(
         override val oppgave: Oppgave,
         val aktivDato: LocalDate,
-        val fristFerdigstillelse: LocalDate,
+        val fristFerdigstillelse: LocalDate?,
     ) : OppgaveRequest
 
     data class Patch(
@@ -71,35 +72,39 @@ sealed interface OppgaveRequest {
 sealed interface Oppgave {
     @get:JsonProperty(access = JsonProperty.Access.READ_ONLY) val type: OppgaveKilde
     val oppgaveFelles: OppgaveFelles
-    val personident: String
+    val personident: String?
     val eksternReferanseId: String?
-    val beskrivelse: String
+    val beskrivelse: String?
+    val oppgaveId: String?
 
     data class Utenlandsk(
         override val eksternReferanseId: String?,
         override val personident: String,
-        override val beskrivelse: String,
-        val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi,
+        override val beskrivelse: String?,
+        override val oppgaveId: String? = null,
     ) : Oppgave {
+        val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi
         val behandlingstype: String = Behandlingstype.UTLAND.verdi
         override val type = OppgaveKilde.UTENLANDSK
         override val oppgaveFelles = OppgaveFelles.Utenlandsk
     }
 
     data class Nasjonal(
-        override val personident: String,
-        override val beskrivelse: String,
         override val eksternReferanseId: String?,
-        val journalpostId: String,
+        override val personident: String,
+        override val beskrivelse: String?,
+        val journalpostId: String?,
+        override val oppgaveId: String? = null,
     ) : Oppgave {
         override val type = OppgaveKilde.NASJONAL
         override val oppgaveFelles = OppgaveFelles.Nasjonal
     }
 
     data class Tilbakedatering(
-        override val personident: String,
-        override val beskrivelse: String,
         override val eksternReferanseId: String?,
+        override val personident: String,
+        override val beskrivelse: String?,
+        override val oppgaveId: String? = null,
     ) : Oppgave {
         val behandlingsType: String = Behandlingstype.TILBAKEDATERING.verdi
         override val type = OppgaveKilde.TILBAKEDATERING
@@ -107,31 +112,34 @@ sealed interface Oppgave {
     }
 
     data class Fordeling(
-        override val personident: String,
-        override val beskrivelse: String,
         override val eksternReferanseId: String?,
-        val behandlingstype: String,
+        override val personident: String?,
+        override val beskrivelse: String?,
+        val behandlingstype: String?,
+        override val oppgaveId: String? = null,
     ) : Oppgave {
         override val type = OppgaveKilde.FORDELING
         override val oppgaveFelles = OppgaveFelles.Fordeling
     }
 
     data class Behandlingsdager(
-        override val personident: String,
-        override val beskrivelse: String,
-        val journalpostId: String,
-        val behandlingstema: String = Behandlingstema.BEHANDLINGSDAGER.verdi,
         override val eksternReferanseId: String?,
+        override val personident: String,
+        override val beskrivelse: String?,
+        override val oppgaveId: String? = null,
+        val journalpostId: String? = null,
     ) : Oppgave {
+        val behandlingstema: String = Behandlingstema.BEHANDLINGSDAGER.verdi
         override val type = OppgaveKilde.BEHANDLINGSDAGER
         override val oppgaveFelles = OppgaveFelles.Behandlingsdager
     }
 
     data class Oppfolging(
         override val personident: String,
-        override val beskrivelse: String,
+        override val beskrivelse: String?,
         override val eksternReferanseId: String?,
-        val tildeltEnhetsnr: String,
+        override val oppgaveId: String? = null,
+        val tildeltEnhetsnr: String?,
         val journalpostId: String?,
     ) : Oppgave {
         override val type = OppgaveKilde.OPPFOLGING
@@ -140,11 +148,12 @@ sealed interface Oppgave {
 
     data class Infotrygd(
         override val personident: String,
-        override val beskrivelse: String,
+        override val beskrivelse: String?,
         override val eksternReferanseId: String?,
+        override val oppgaveId: String? = null,
         val journalpostId: String?,
     ) : Oppgave {
-        override val type = OppgaveKilde.OPPFOLGING
+        override val type = OppgaveKilde.INFOTRYGD
         override val oppgaveFelles = OppgaveFelles.Oppfolging
     }
 }

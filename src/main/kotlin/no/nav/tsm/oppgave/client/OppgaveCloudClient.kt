@@ -13,13 +13,13 @@ import io.ktor.server.plugins.di.annotations.*
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.util.*
+import no.nav.tsm.api.model.OpprettOppgaveRequest
 import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.core.utils.toFssCluster
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.oppgave.client.model.OppgaveErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
-import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
 
 class OppgaveCloudClient(

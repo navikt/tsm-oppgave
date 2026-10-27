@@ -1,12 +1,12 @@
-package no.nav.tsm.oppgave.routes
+package no.nav.tsm.api.routes
 
 import arrow.core.raise.either
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
+import no.nav.tsm.api.OppgaveService
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.oppgave.OppgaveService
 import no.nav.tsm.oppgave.client.model.OppgaveErrors
 
 fun Route.getOppgaveRoutes(oppgaveService: OppgaveService) {
