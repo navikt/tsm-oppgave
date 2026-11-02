@@ -7,8 +7,8 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tsm.api.OppgaveService
 import no.nav.tsm.api.model.OpprettOppgaveRequest
+import no.nav.tsm.api.model.toOppgave
 import no.nav.tsm.core.model.OppgaveKilde
-import no.nav.tsm.core.model.toOppgave
 
 fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
     post("/api/oppgave") {
