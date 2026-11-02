@@ -2,8 +2,8 @@
 jvmVersion = "25"
 
 kotlin = "2.4.21"
-logback = "1.6.5"
-arrow = "2.2.3"
+logback = "1.6.6"
+arrow = "2.3.0.1"
 flyway = "13.11.1"
 postgres = "42.7.14"
 
