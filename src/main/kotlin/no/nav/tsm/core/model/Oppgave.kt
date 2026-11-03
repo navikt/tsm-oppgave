@@ -3,7 +3,7 @@ package no.nav.tsm.core.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
-enum class OppgaveKilde {
+enum class OppgaveType {
     UTENLANDSK,
     NASJONAL,
     TILBAKEDATERING,
@@ -16,7 +16,7 @@ enum class OppgaveKilde {
 enum class OppgaveFelles(
     val oppgaveType: Oppgavetype,
     val prioritet: Prioritet,
-    val behandlesAvApplikasjon: BehandlesAvApplikasjon?,
+    val behandlesAvApplikasjon: BehandlesAvApplikasjon,
 ) {
     Utenlandsk(
         oppgaveType = Oppgavetype.JFR,
@@ -51,9 +51,9 @@ enum class OppgaveFelles(
 }
 
 sealed interface Oppgave {
-    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY) val type: OppgaveKilde
+    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY) val type: OppgaveType
     val oppgaveFelles: OppgaveFelles
-    val sykmeldingId: String?
+    val sykmeldingId: String
     val beskrivelse: String?
     val oppgaveId: String?
     val aktivDato: LocalDate
@@ -61,7 +61,7 @@ sealed interface Oppgave {
     val fristFerdigstillelse: LocalDate?
 
     data class Utenlandsk(
-        override val sykmeldingId: String?,
+        override val sykmeldingId: String,
         override val beskrivelse: String?,
         override val oppgaveId: String? = null,
         override val status: String? = null,
@@ -73,12 +73,12 @@ sealed interface Oppgave {
     ) : Oppgave {
         val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi
         val behandlingstype: String = Behandlingstype.UTLAND.verdi
-        override val type = OppgaveKilde.UTENLANDSK
+        override val type = OppgaveType.UTENLANDSK
         override val oppgaveFelles = OppgaveFelles.Utenlandsk
     }
 
     data class Nasjonal(
-        override val sykmeldingId: String?,
+        override val sykmeldingId: String,
         override val beskrivelse: String?,
         override val oppgaveId: String? = null,
         override val status: String? = null,
@@ -90,12 +90,12 @@ sealed interface Oppgave {
         val journalpostId: String?,
         val endretAvEnhetsnr: String? = null,
     ) : Oppgave {
-        override val type = OppgaveKilde.NASJONAL
+        override val type = OppgaveType.NASJONAL
         override val oppgaveFelles = OppgaveFelles.Nasjonal
     }
 
     data class Tilbakedatering(
-        override val sykmeldingId: String?,
+        override val sykmeldingId: String,
         override val beskrivelse: String?,
         override val oppgaveId: String? = null,
         override val status: String? = null,
@@ -106,12 +106,12 @@ sealed interface Oppgave {
         val tilordnetRessurs: String? = null,
     ) : Oppgave {
         val behandlingsType: String = Behandlingstype.TILBAKEDATERING.verdi
-        override val type = OppgaveKilde.TILBAKEDATERING
+        override val type = OppgaveType.TILBAKEDATERING
         override val oppgaveFelles = OppgaveFelles.Tilbakedatering
     }
 
     data class Fordeling(
-        override val sykmeldingId: String?,
+        override val sykmeldingId: String,
         override val beskrivelse: String?,
         override val oppgaveId: String? = null,
         override val status: String? = null,
@@ -119,12 +119,12 @@ sealed interface Oppgave {
         override val fristFerdigstillelse: LocalDate?,
         val behandlingstype: String?,
     ) : Oppgave {
-        override val type = OppgaveKilde.FORDELING
+        override val type = OppgaveType.FORDELING
         override val oppgaveFelles = OppgaveFelles.Fordeling
     }
 
     data class Behandlingsdager(
-        override val sykmeldingId: String?,
+        override val sykmeldingId: String,
         override val beskrivelse: String?,
         override val oppgaveId: String? = null,
         override val status: String? = null,
@@ -134,13 +134,13 @@ sealed interface Oppgave {
         val journalpostId: String? = null,
     ) : Oppgave {
         val behandlingstema: String = Behandlingstema.BEHANDLINGSDAGER.verdi
-        override val type = OppgaveKilde.BEHANDLINGSDAGER
+        override val type = OppgaveType.BEHANDLINGSDAGER
         override val oppgaveFelles = OppgaveFelles.Behandlingsdager
     }
 
     data class Oppfolging(
         override val beskrivelse: String?,
-        override val sykmeldingId: String?,
+        override val sykmeldingId: String,
         override val oppgaveId: String? = null,
         override val status: String? = null,
         override val aktivDato: LocalDate,
@@ -149,13 +149,13 @@ sealed interface Oppgave {
         val tildeltEnhetsnr: String?,
         val journalpostId: String?,
     ) : Oppgave {
-        override val type = OppgaveKilde.OPPFOLGING
+        override val type = OppgaveType.OPPFOLGING
         override val oppgaveFelles = OppgaveFelles.Oppfolging
     }
 
     data class Infotrygd(
         override val beskrivelse: String?,
-        override val sykmeldingId: String?,
+        override val sykmeldingId: String,
         override val oppgaveId: String? = null,
         override val status: String? = null,
         override val aktivDato: LocalDate,
@@ -163,7 +163,7 @@ sealed interface Oppgave {
         val personident: String,
         val journalpostId: String?,
     ) : Oppgave {
-        override val type = OppgaveKilde.INFOTRYGD
+        override val type = OppgaveType.INFOTRYGD
         override val oppgaveFelles = OppgaveFelles.Oppfolging
     }
 }

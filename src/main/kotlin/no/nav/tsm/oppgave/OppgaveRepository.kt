@@ -8,7 +8,7 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import no.nav.tsm.core.db.OpprettOppgaveTable
 import no.nav.tsm.core.db.dbQuery
 import no.nav.tsm.core.model.Oppgave
-import no.nav.tsm.core.model.OppgaveKilde
+import no.nav.tsm.core.model.OppgaveType
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -35,7 +35,6 @@ class OppgaveRepository {
                     is Oppgave.Oppfolging -> oppgave.tildeltEnhetsnr
                     else -> null
                 }
-            it[opprettet_av_enhetsnr] = "9999"
             it[journalpost_id] =
                 when (oppgave) {
                     is Oppgave.Nasjonal -> oppgave.journalpostId
@@ -46,7 +45,6 @@ class OppgaveRepository {
                 }
             it[behandles_av_applikasjon] = oppgave.oppgaveFelles.behandlesAvApplikasjon?.name
             it[beskrivelse] = oppgave.beskrivelse
-            it[tema] = "SYM"
             it[behandlingstema] =
                 when (oppgave) {
                     is Oppgave.Behandlingsdager -> oppgave.behandlingstema
@@ -78,7 +76,7 @@ class OppgaveRepository {
     }
 
     fun ResultRow.toOppgaveRequest(): Oppgave {
-        val kilde = OppgaveKilde.valueOf(this[OpprettOppgaveTable.oppgavekilde])
+        val kilde = OppgaveType.valueOf(this[OpprettOppgaveTable.oppgavekilde])
         val personident = this[OpprettOppgaveTable.personident]
         val eksternReferanseId = this[OpprettOppgaveTable.ekstern_referanse_id]
         val beskrivelse = this[OpprettOppgaveTable.beskrivelse]
@@ -87,7 +85,7 @@ class OppgaveRepository {
         val fristFerdigstillelse =
             this[OpprettOppgaveTable.frist_ferdigstillelse]?.toJavaLocalDate()
         return when (kilde) {
-            OppgaveKilde.UTENLANDSK ->
+            OppgaveType.UTENLANDSK ->
                 Oppgave.Utenlandsk(
                     sykmeldingId = eksternReferanseId,
                     personident = requireNotNull(personident),
@@ -97,7 +95,7 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveKilde.NASJONAL ->
+            OppgaveType.NASJONAL ->
                 Oppgave.Nasjonal(
                     sykmeldingId = eksternReferanseId,
                     personident = requireNotNull(personident),
@@ -108,7 +106,7 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveKilde.TILBAKEDATERING ->
+            OppgaveType.TILBAKEDATERING ->
                 Oppgave.Tilbakedatering(
                     sykmeldingId = eksternReferanseId,
                     personident = requireNotNull(personident),
@@ -118,7 +116,7 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveKilde.FORDELING ->
+            OppgaveType.FORDELING ->
                 Oppgave.Fordeling(
                     sykmeldingId = eksternReferanseId,
                     beskrivelse = beskrivelse,
@@ -128,7 +126,7 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveKilde.BEHANDLINGSDAGER ->
+            OppgaveType.BEHANDLINGSDAGER ->
                 Oppgave.Behandlingsdager(
                     sykmeldingId = eksternReferanseId,
                     personident = requireNotNull(personident),
@@ -139,7 +137,7 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveKilde.OPPFOLGING ->
+            OppgaveType.OPPFOLGING ->
                 Oppgave.Oppfolging(
                     sykmeldingId = eksternReferanseId,
                     personident = requireNotNull(personident),
@@ -151,7 +149,7 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveKilde.INFOTRYGD ->
+            OppgaveType.INFOTRYGD ->
                 Oppgave.Infotrygd(
                     sykmeldingId = eksternReferanseId,
                     personident = requireNotNull(personident),

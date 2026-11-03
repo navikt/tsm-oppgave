@@ -5,9 +5,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import no.nav.tsm.api.OppgaveService
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.oppgave.client.model.OppgaveErrors
+import no.nav.tsm.oppgave.OppgaveService
+import no.nav.tsm.oppgave.client.model.OppgaveClientErrors
 
 fun Route.getOppgaveRoutes(oppgaveService: OppgaveService) {
     val log = logger()
@@ -21,7 +21,7 @@ fun Route.getOppgaveRoutes(oppgaveService: OppgaveService) {
             .fold(
                 ifLeft = { error ->
                     when {
-                        error == OppgaveErrors.NotFound -> {
+                        error == OppgaveClientErrors.NotFound -> {
                             log.info("Fant ikke oppgave for ident")
                             call.respond(message = "not Fund", status = HttpStatusCode.NotFound)
                         }

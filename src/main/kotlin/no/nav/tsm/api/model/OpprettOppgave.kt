@@ -2,7 +2,7 @@ package no.nav.tsm.api.model
 
 import java.time.LocalDate
 import no.nav.tsm.core.model.Oppgave
-import no.nav.tsm.core.model.OppgaveKilde
+import no.nav.tsm.core.model.OppgaveType
 
 data class CreateOppgavePayload(
     val personident: String?,
@@ -16,9 +16,9 @@ data class CreateOppgavePayload(
     val kilde: String,
 )
 
-fun CreateOppgavePayload.toOppgave(kilde: OppgaveKilde): Oppgave {
+fun CreateOppgavePayload.toOppgave(kilde: OppgaveType): Oppgave {
     return when (kilde) {
-        OppgaveKilde.UTENLANDSK ->
+        OppgaveType.UTENLANDSK ->
             Oppgave.Utenlandsk(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -27,7 +27,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveKilde): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveKilde.NASJONAL ->
+        OppgaveType.NASJONAL ->
             Oppgave.Nasjonal(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -37,7 +37,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveKilde): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveKilde.TILBAKEDATERING ->
+        OppgaveType.TILBAKEDATERING ->
             Oppgave.Tilbakedatering(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -46,7 +46,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveKilde): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveKilde.FORDELING ->
+        OppgaveType.FORDELING ->
             Oppgave.Fordeling(
                 sykmeldingId = sykmeldingId,
                 beskrivelse = beskrivelse,
@@ -55,7 +55,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveKilde): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveKilde.BEHANDLINGSDAGER ->
+        OppgaveType.BEHANDLINGSDAGER ->
             Oppgave.Behandlingsdager(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -64,7 +64,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveKilde): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveKilde.OPPFOLGING ->
+        OppgaveType.OPPFOLGING ->
             Oppgave.Oppfolging(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -75,7 +75,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveKilde): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveKilde.INFOTRYGD ->
+        OppgaveType.INFOTRYGD ->
             Oppgave.Infotrygd(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
