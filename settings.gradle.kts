@@ -1,6 +1,6 @@
 rootProject.name = "tsm-oppgave"
 
-val ktorVersion = "3.6.0"
+val ktorVersion = "3.6.1"
 val tsmKtorVersion = "1.3.6"
 val exposedVersion = "1.6.0"
 
