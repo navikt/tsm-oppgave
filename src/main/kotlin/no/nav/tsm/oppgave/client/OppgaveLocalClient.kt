@@ -1,7 +1,7 @@
 package no.nav.tsm.oppgave.client
 
 import arrow.core.Either
-import no.nav.tsm.api.model.OpprettOppgaveRequest
+import no.nav.tsm.api.model.CreateOppgavePayload
 import no.nav.tsm.oppgave.client.model.OppgaveErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
@@ -13,7 +13,7 @@ class OppgaveLocalClient : OppgaveClient {
     }
 
     override suspend fun createOppgave(
-        oppgave: OpprettOppgaveRequest
+        oppgave: CreateOppgavePayload
     ): Either<OppgaveErrors, OpprettOppgaveResponse> {
         TODO("Not yet implemented")
     }

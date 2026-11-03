@@ -6,13 +6,13 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tsm.api.OppgaveService
-import no.nav.tsm.api.model.OpprettOppgaveRequest
+import no.nav.tsm.api.model.CreateOppgavePayload
 import no.nav.tsm.api.model.toOppgave
 import no.nav.tsm.core.model.OppgaveKilde
 
 fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
     post("/api/oppgave") {
-        val oppgaveRequest: OpprettOppgaveRequest = call.receive()
+        val oppgaveRequest: CreateOppgavePayload = call.receive()
         val oppgave = oppgaveRequest.toOppgave(OppgaveKilde.valueOf(oppgaveRequest.kilde))
         oppgaveService.insertOppgave(oppgave)
         call.respond(HttpStatusCode.Accepted)

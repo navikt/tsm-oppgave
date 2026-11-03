@@ -13,7 +13,7 @@ import io.ktor.server.plugins.di.annotations.*
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.util.*
-import no.nav.tsm.api.model.OpprettOppgaveRequest
+import no.nav.tsm.api.model.CreateOppgavePayload
 import no.nav.tsm.core.utils.Environment
 import no.nav.tsm.core.utils.toFssCluster
 import no.nav.tsm.ktor.auth.texas.Texas
@@ -83,7 +83,7 @@ class OppgaveCloudClient(
 
     @WithSpan
     override suspend fun createOppgave(
-        oppgave: OpprettOppgaveRequest
+        oppgave: CreateOppgavePayload
     ): Either<OppgaveErrors, OpprettOppgaveResponse> {
         val span = Span.current()
         TODO()

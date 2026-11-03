@@ -3,9 +3,8 @@ package no.nav.tsm.api.model
 import java.time.LocalDate
 import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.core.model.OppgaveKilde
-import no.nav.tsm.core.model.OppgaveRequest
 
-data class OpprettOppgaveRequest(
+data class CreateOppgavePayload(
     val personident: String?,
     val tildeltEnhetsnr: String?,
     val journalpostId: String?,
@@ -13,73 +12,77 @@ data class OpprettOppgaveRequest(
     val behandlingstype: String?,
     val aktivDato: LocalDate,
     val fristFerdigstillelse: LocalDate,
-    val eksternReferanseId: String,
+    val sykmeldingId: String,
     val kilde: String,
 )
 
-fun OpprettOppgaveRequest.toOppgave(kilde: OppgaveKilde): OppgaveRequest.Post {
-    val ident = requireNotNull(personident)
+fun CreateOppgavePayload.toOppgave(kilde: OppgaveKilde): Oppgave {
+    return when (kilde) {
+        OppgaveKilde.UTENLANDSK ->
+            Oppgave.Utenlandsk(
+                sykmeldingId = sykmeldingId,
+                personident = requireNotNull(personident),
+                beskrivelse = beskrivelse,
+                aktivDato = LocalDate.now(),
+                fristFerdigstillelse = fristFerdigstillelse,
+            )
 
-    val oppgave =
-        when (kilde) {
-            OppgaveKilde.UTENLANDSK ->
-                Oppgave.Utenlandsk(
-                    eksternReferanseId = eksternReferanseId,
-                    personident = ident,
-                    beskrivelse = beskrivelse,
-                )
+        OppgaveKilde.NASJONAL ->
+            Oppgave.Nasjonal(
+                sykmeldingId = sykmeldingId,
+                personident = requireNotNull(personident),
+                beskrivelse = beskrivelse,
+                journalpostId = journalpostId,
+                aktivDato = LocalDate.now(),
+                fristFerdigstillelse = fristFerdigstillelse,
+            )
 
-            OppgaveKilde.NASJONAL ->
-                Oppgave.Nasjonal(
-                    eksternReferanseId = eksternReferanseId,
-                    personident = ident,
-                    beskrivelse = beskrivelse,
-                    journalpostId = journalpostId,
-                )
+        OppgaveKilde.TILBAKEDATERING ->
+            Oppgave.Tilbakedatering(
+                sykmeldingId = sykmeldingId,
+                personident = requireNotNull(personident),
+                beskrivelse = beskrivelse,
+                aktivDato = LocalDate.now(),
+                fristFerdigstillelse = fristFerdigstillelse,
+            )
 
-            OppgaveKilde.TILBAKEDATERING ->
-                Oppgave.Tilbakedatering(
-                    eksternReferanseId = eksternReferanseId,
-                    personident = ident,
-                    beskrivelse = beskrivelse,
-                )
+        OppgaveKilde.FORDELING ->
+            Oppgave.Fordeling(
+                sykmeldingId = sykmeldingId,
+                beskrivelse = beskrivelse,
+                behandlingstype = behandlingstype,
+                aktivDato = LocalDate.now(),
+                fristFerdigstillelse = fristFerdigstillelse,
+            )
 
-            OppgaveKilde.FORDELING ->
-                Oppgave.Fordeling(
-                    eksternReferanseId = eksternReferanseId,
-                    personident = personident,
-                    beskrivelse = beskrivelse,
-                    behandlingstype = behandlingstype,
-                )
+        OppgaveKilde.BEHANDLINGSDAGER ->
+            Oppgave.Behandlingsdager(
+                sykmeldingId = sykmeldingId,
+                personident = requireNotNull(personident),
+                beskrivelse = beskrivelse,
+                aktivDato = LocalDate.now(),
+                fristFerdigstillelse = fristFerdigstillelse,
+            )
 
-            OppgaveKilde.BEHANDLINGSDAGER ->
-                Oppgave.Behandlingsdager(
-                    eksternReferanseId = eksternReferanseId,
-                    personident = ident,
-                    beskrivelse = beskrivelse,
-                )
+        OppgaveKilde.OPPFOLGING ->
+            Oppgave.Oppfolging(
+                sykmeldingId = sykmeldingId,
+                personident = requireNotNull(personident),
+                beskrivelse = beskrivelse,
+                tildeltEnhetsnr = tildeltEnhetsnr,
+                journalpostId = journalpostId,
+                aktivDato = LocalDate.now(),
+                fristFerdigstillelse = fristFerdigstillelse,
+            )
 
-            OppgaveKilde.OPPFOLGING ->
-                Oppgave.Oppfolging(
-                    eksternReferanseId = eksternReferanseId,
-                    personident = ident,
-                    beskrivelse = beskrivelse,
-                    tildeltEnhetsnr = tildeltEnhetsnr,
-                    journalpostId = journalpostId,
-                )
-
-            OppgaveKilde.INFOTRYGD ->
-                Oppgave.Infotrygd(
-                    eksternReferanseId = eksternReferanseId,
-                    personident = ident,
-                    beskrivelse = beskrivelse,
-                    journalpostId = journalpostId,
-                )
-        }
-
-    return OppgaveRequest.Post(
-        oppgave = oppgave,
-        aktivDato = aktivDato,
-        fristFerdigstillelse = fristFerdigstillelse,
-    )
+        OppgaveKilde.INFOTRYGD ->
+            Oppgave.Infotrygd(
+                sykmeldingId = sykmeldingId,
+                personident = requireNotNull(personident),
+                beskrivelse = beskrivelse,
+                journalpostId = journalpostId,
+                aktivDato = LocalDate.now(),
+                fristFerdigstillelse = fristFerdigstillelse,
+            )
+    }
 }
