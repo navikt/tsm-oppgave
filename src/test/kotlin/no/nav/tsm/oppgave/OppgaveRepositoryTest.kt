@@ -37,14 +37,15 @@ class OppgaveRepositoryTest : WithPostgresql() {
 
     @Test
     fun `insert and list Nasjonal oppgave`() = runTest {
-        val oppgave = Oppgave.Nasjonal(
-            sykmeldingId = UUID.randomUUID().toString(),
-            personident = IDENT,
-            beskrivelse = null,
-            aktivDato = LocalDate.now(),
-            fristFerdigstillelse = null,
-            journalpostId = null,
-        )
+        val oppgave =
+            Oppgave.Nasjonal(
+                sykmeldingId = UUID.randomUUID().toString(),
+                personident = IDENT,
+                beskrivelse = null,
+                aktivDato = LocalDate.now(),
+                fristFerdigstillelse = null,
+                journalpostId = null,
+            )
         oppgaveRepository.insert(oppgave)
         val oppgaver = oppgaveRepository.listByIdent(IDENT)
         oppgaver shouldBe listOf(oppgave)
