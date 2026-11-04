@@ -22,7 +22,7 @@ fun Application.module() {
     configureDatabase()
 
     // Specific modules
+    configureOppgaveModule()
     configureSafModule()
     configureOppgaveApi()
-    configureOppgaveModule()
 }
