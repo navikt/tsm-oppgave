@@ -1,11 +1,164 @@
 package no.nav.tsm.oppgave
 
+import java.time.LocalDateTime
+import java.util.UUID
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toKotlinLocalDate
+import kotlinx.datetime.toKotlinLocalDateTime
+import no.nav.tsm.core.db.OpprettOppgaveTable
 import no.nav.tsm.core.db.dbQuery
 import no.nav.tsm.core.model.Oppgave
-import no.nav.tsm.ktor.logger
+import no.nav.tsm.core.model.TsmOppgaveType
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 
 class OppgaveRepository {
-    private val logger = logger()
 
-    suspend fun insert(oppgave: Oppgave) = dbQuery { logger.info("Inserting oppgave") }
+    suspend fun insert(oppgave: Oppgave) = dbQuery {
+        OpprettOppgaveTable.insert {
+            it[id] = UUID.randomUUID()
+            it[personident] =
+                when (oppgave) {
+                    is Oppgave.Nasjonal -> oppgave.personident
+                    is Oppgave.Behandlingsdager -> oppgave.personident
+                    is Oppgave.Oppfolging -> oppgave.personident
+                    is Oppgave.Infotrygd -> oppgave.personident
+                    is Oppgave.Utenlandsk -> oppgave.personident
+                    is Oppgave.Tilbakedatering -> oppgave.personident
+                    else -> null
+                }
+            it[tildelt_enhetsnr] =
+                when (oppgave) {
+                    is Oppgave.Utenlandsk -> oppgave.tildeltEnhetsnr
+                    is Oppgave.Oppfolging -> oppgave.tildeltEnhetsnr
+                    else -> null
+                }
+            it[journalpost_id] =
+                when (oppgave) {
+                    is Oppgave.Nasjonal -> oppgave.journalpostId
+                    is Oppgave.Behandlingsdager -> oppgave.journalpostId
+                    is Oppgave.Oppfolging -> oppgave.journalpostId
+                    is Oppgave.Infotrygd -> oppgave.journalpostId
+                    else -> null
+                }
+            it[behandles_av_applikasjon] = oppgave.oppgaveFelles.behandlesAvApplikasjon.name
+            it[beskrivelse] = oppgave.beskrivelse
+            it[behandlingstema] =
+                when (oppgave) {
+                    is Oppgave.Behandlingsdager -> oppgave.behandlingstema
+                    else -> null
+                }
+            it[oppgavetype] = oppgave.oppgaveFelles.oppgaveType.name
+            it[behandlingstype] =
+                when (oppgave) {
+                    is Oppgave.Utenlandsk -> oppgave.behandlingstype
+                    is Oppgave.Tilbakedatering -> oppgave.behandlingsType
+                    is Oppgave.Fordeling -> oppgave.behandlingstype
+                    else -> null
+                }
+            it[aktiv_dato] = oppgave.aktivDato.toKotlinLocalDate()
+            it[frist_ferdigstillelse] = oppgave.fristFerdigstillelse?.toKotlinLocalDate()
+            it[prioritet] = oppgave.oppgaveFelles.prioritet.name
+            it[sykmeldingId] = oppgave.sykmeldingId
+            it[created] = LocalDateTime.now().toKotlinLocalDateTime()
+            it[oppgave_opprettet] = null
+            it[oppgave_id] = null
+            it[tsm_oppgavetype] = oppgave.type.toString()
+        }
+    }
+
+    suspend fun listByIdent(ident: String): List<Oppgave> = dbQuery {
+        OpprettOppgaveTable.selectAll()
+            .where { OpprettOppgaveTable.personident eq ident }
+            .map { it.toOppgave() }
+    }
+
+    fun ResultRow.toOppgave(): Oppgave {
+        val type = TsmOppgaveType.valueOf(this[OpprettOppgaveTable.tsm_oppgavetype])
+        val personident = this[OpprettOppgaveTable.personident]
+        val sykmeldingId = this[OpprettOppgaveTable.sykmeldingId]
+        val beskrivelse = this[OpprettOppgaveTable.beskrivelse]
+        val oppgaveId = this[OpprettOppgaveTable.oppgave_id]?.toString()
+        val aktivDato = this[OpprettOppgaveTable.aktiv_dato].toJavaLocalDate()
+        val fristFerdigstillelse =
+            this[OpprettOppgaveTable.frist_ferdigstillelse]?.toJavaLocalDate()
+        return when (type) {
+            TsmOppgaveType.UTENLANDSK ->
+                Oppgave.Utenlandsk(
+                    sykmeldingId = sykmeldingId,
+                    personident = requireNotNull(personident),
+                    beskrivelse = beskrivelse,
+                    oppgaveId = oppgaveId,
+                    aktivDato = aktivDato,
+                    fristFerdigstillelse = fristFerdigstillelse,
+                )
+
+            TsmOppgaveType.NASJONAL ->
+                Oppgave.Nasjonal(
+                    sykmeldingId = sykmeldingId,
+                    personident = requireNotNull(personident),
+                    beskrivelse = beskrivelse,
+                    journalpostId = this[OpprettOppgaveTable.journalpost_id],
+                    oppgaveId = oppgaveId,
+                    aktivDato = aktivDato,
+                    fristFerdigstillelse = fristFerdigstillelse,
+                )
+
+            TsmOppgaveType.TILBAKEDATERING ->
+                Oppgave.Tilbakedatering(
+                    sykmeldingId = sykmeldingId,
+                    personident = requireNotNull(personident),
+                    beskrivelse = beskrivelse,
+                    oppgaveId = oppgaveId,
+                    aktivDato = aktivDato,
+                    fristFerdigstillelse = fristFerdigstillelse,
+                )
+
+            TsmOppgaveType.FORDELING ->
+                Oppgave.Fordeling(
+                    sykmeldingId = sykmeldingId,
+                    beskrivelse = beskrivelse,
+                    behandlingstype = this[OpprettOppgaveTable.behandlingstype],
+                    oppgaveId = oppgaveId,
+                    aktivDato = aktivDato,
+                    fristFerdigstillelse = fristFerdigstillelse,
+                )
+
+            TsmOppgaveType.BEHANDLINGSDAGER ->
+                Oppgave.Behandlingsdager(
+                    sykmeldingId = sykmeldingId,
+                    personident = requireNotNull(personident),
+                    beskrivelse = beskrivelse,
+                    journalpostId = this[OpprettOppgaveTable.journalpost_id],
+                    oppgaveId = oppgaveId,
+                    aktivDato = aktivDato,
+                    fristFerdigstillelse = fristFerdigstillelse,
+                )
+
+            TsmOppgaveType.OPPFOLGING ->
+                Oppgave.Oppfolging(
+                    sykmeldingId = sykmeldingId,
+                    personident = requireNotNull(personident),
+                    beskrivelse = beskrivelse,
+                    tildeltEnhetsnr = this[OpprettOppgaveTable.tildelt_enhetsnr],
+                    journalpostId = this[OpprettOppgaveTable.journalpost_id],
+                    oppgaveId = oppgaveId,
+                    aktivDato = aktivDato,
+                    fristFerdigstillelse = fristFerdigstillelse,
+                )
+
+            TsmOppgaveType.INFOTRYGD ->
+                Oppgave.Infotrygd(
+                    sykmeldingId = sykmeldingId,
+                    personident = requireNotNull(personident),
+                    beskrivelse = beskrivelse,
+                    journalpostId = this[OpprettOppgaveTable.journalpost_id],
+                    oppgaveId = oppgaveId,
+                    aktivDato = aktivDato,
+                    fristFerdigstillelse = fristFerdigstillelse,
+                )
+        }
+    }
 }

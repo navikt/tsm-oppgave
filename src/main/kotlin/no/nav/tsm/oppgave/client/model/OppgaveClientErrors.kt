@@ -1,6 +1,6 @@
 package no.nav.tsm.oppgave.client.model
 
-enum class OppgaveErrors {
+enum class OppgaveClientErrors {
     NotFound, // relevant for hele flyten - route, service, client
     Unknown, // relevant for hele flyten - route, service, client
     Unauthorized, // oss problem, på et tidligere tidspunkt??? men dersom fra oppgave er det et oss

@@ -4,8 +4,14 @@ import arrow.core.Either
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.oppgave.client.OppgaveClient
-import no.nav.tsm.oppgave.client.model.OppgaveErrors
+import no.nav.tsm.oppgave.client.model.OppgaveClientErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
+import no.nav.tsm.oppgave.client.model.toOpprettOppgaveRequest
+
+enum class OppgaveServiceErrors {
+    Conflict,
+    NotFound,
+}
 
 class OppgaveService(
     private val oppgaveClient: OppgaveClient,
@@ -13,14 +19,21 @@ class OppgaveService(
 ) {
 
     @WithSpan
-    suspend fun getOppgaver(ident: String): Either<OppgaveErrors, List<OppgaveResponse>> {
+    suspend fun getOppgaver(ident: String): Either<OppgaveClientErrors, List<OppgaveResponse>> {
+        // Todo deal with errors?
         return oppgaveClient.getOppgaver(ident)
     }
 
     @WithSpan
-    suspend fun insertOppgave(oppgave: Oppgave) {
+    suspend fun oppretAsyncOppgave(oppgave: Oppgave): Either<OppgaveServiceErrors, Oppgave> {
+        val insertOppgave = oppgaveRepository.insert(oppgave)
+        return TODO()
+    }
 
-        oppgaveRepository.insert(oppgave)
-        // håndtere eventuelle greier?
+    @WithSpan
+    suspend fun opprettSyncOppgave(oppgave: Oppgave): Either<OppgaveServiceErrors, Oppgave> {
+        val insertOppgave = oppgaveRepository.insert(oppgave)
+        oppgaveClient.createOppgave(oppgave = oppgave.toOpprettOppgaveRequest())
+        return TODO()
     }
 }

@@ -1,4 +1,4 @@
-package no.nav.tsm.oppgave.routes
+package no.nav.tsm.api.routes
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.di.*
@@ -7,7 +7,7 @@ import no.nav.tsm.ktor.auth.entra.entraMachineToken
 import no.nav.tsm.ktor.auth.entra.entraOnBehalfOf
 import no.nav.tsm.oppgave.OppgaveService
 
-fun Application.configureOppgaveApi() {
+fun Application.configureOppgaveRoutes() {
     val oppgaveService: OppgaveService by dependencies
 
     routing {
