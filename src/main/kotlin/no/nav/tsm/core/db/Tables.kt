@@ -18,9 +18,9 @@ object OpprettOppgaveTable : Table("opprett_oppgave") {
     val aktiv_dato = date("aktiv_dato")
     val frist_ferdigstillelse = date("frist_ferdigstillelse").nullable()
     val prioritet = text("prioritet")
-    val ekstern_referanse_id = text("ekstern_referanse_id").nullable()
+    val sykmeldingId = text("sykmelding_id")
     val created = datetime("created")
     val oppgave_opprettet = datetime("oppgave_opprettet").nullable()
     val oppgave_id = javaUUID("oppgave_id").nullable()
-    val oppgavekilde = text("oppgavekilde")
+    val tsm_oppgavetype = text("tsm_oppgavetype")
 }

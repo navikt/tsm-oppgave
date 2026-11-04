@@ -37,7 +37,9 @@ class OppgaveCloudClient(
 
     // TODO: kanskje vi må sende med en liste med identer
     @WithSpan
-    override suspend fun getOppgaver(ident: String): Either<OppgaveClientErrors, List<OppgaveResponse>> {
+    override suspend fun getOppgaver(
+        ident: String
+    ): Either<OppgaveClientErrors, List<OppgaveResponse>> {
         val span = Span.current()
         val (accessToken) = this.getToken()
         val xCorrelationId = UUID.randomUUID().toString()

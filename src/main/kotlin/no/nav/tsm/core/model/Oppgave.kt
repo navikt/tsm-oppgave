@@ -3,7 +3,7 @@ package no.nav.tsm.core.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
-enum class OppgaveType {
+enum class TsmOppgaveType {
     UTENLANDSK,
     NASJONAL,
     TILBAKEDATERING,
@@ -51,7 +51,7 @@ enum class OppgaveFelles(
 }
 
 sealed interface Oppgave {
-    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY) val type: OppgaveType
+    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY) val type: TsmOppgaveType
     val oppgaveFelles: OppgaveFelles
     val sykmeldingId: String
     val beskrivelse: String?
@@ -73,7 +73,7 @@ sealed interface Oppgave {
     ) : Oppgave {
         val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi
         val behandlingstype: String = Behandlingstype.UTLAND.verdi
-        override val type = OppgaveType.UTENLANDSK
+        override val type = TsmOppgaveType.UTENLANDSK
         override val oppgaveFelles = OppgaveFelles.Utenlandsk
     }
 
@@ -90,7 +90,7 @@ sealed interface Oppgave {
         val journalpostId: String?,
         val endretAvEnhetsnr: String? = null,
     ) : Oppgave {
-        override val type = OppgaveType.NASJONAL
+        override val type = TsmOppgaveType.NASJONAL
         override val oppgaveFelles = OppgaveFelles.Nasjonal
     }
 
@@ -106,7 +106,7 @@ sealed interface Oppgave {
         val tilordnetRessurs: String? = null,
     ) : Oppgave {
         val behandlingsType: String = Behandlingstype.TILBAKEDATERING.verdi
-        override val type = OppgaveType.TILBAKEDATERING
+        override val type = TsmOppgaveType.TILBAKEDATERING
         override val oppgaveFelles = OppgaveFelles.Tilbakedatering
     }
 
@@ -119,7 +119,7 @@ sealed interface Oppgave {
         override val fristFerdigstillelse: LocalDate?,
         val behandlingstype: String?,
     ) : Oppgave {
-        override val type = OppgaveType.FORDELING
+        override val type = TsmOppgaveType.FORDELING
         override val oppgaveFelles = OppgaveFelles.Fordeling
     }
 
@@ -134,7 +134,7 @@ sealed interface Oppgave {
         val journalpostId: String? = null,
     ) : Oppgave {
         val behandlingstema: String = Behandlingstema.BEHANDLINGSDAGER.verdi
-        override val type = OppgaveType.BEHANDLINGSDAGER
+        override val type = TsmOppgaveType.BEHANDLINGSDAGER
         override val oppgaveFelles = OppgaveFelles.Behandlingsdager
     }
 
@@ -149,7 +149,7 @@ sealed interface Oppgave {
         val tildeltEnhetsnr: String?,
         val journalpostId: String?,
     ) : Oppgave {
-        override val type = OppgaveType.OPPFOLGING
+        override val type = TsmOppgaveType.OPPFOLGING
         override val oppgaveFelles = OppgaveFelles.Oppfolging
     }
 
@@ -163,7 +163,7 @@ sealed interface Oppgave {
         val personident: String,
         val journalpostId: String?,
     ) : Oppgave {
-        override val type = OppgaveType.INFOTRYGD
+        override val type = TsmOppgaveType.INFOTRYGD
         override val oppgaveFelles = OppgaveFelles.Oppfolging
     }
 }

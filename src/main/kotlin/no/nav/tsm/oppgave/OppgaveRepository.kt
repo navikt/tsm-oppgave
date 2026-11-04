@@ -8,7 +8,7 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import no.nav.tsm.core.db.OpprettOppgaveTable
 import no.nav.tsm.core.db.dbQuery
 import no.nav.tsm.core.model.Oppgave
-import no.nav.tsm.core.model.OppgaveType
+import no.nav.tsm.core.model.TsmOppgaveType
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -43,7 +43,7 @@ class OppgaveRepository {
                     is Oppgave.Infotrygd -> oppgave.journalpostId
                     else -> null
                 }
-            it[behandles_av_applikasjon] = oppgave.oppgaveFelles.behandlesAvApplikasjon?.name
+            it[behandles_av_applikasjon] = oppgave.oppgaveFelles.behandlesAvApplikasjon.name
             it[beskrivelse] = oppgave.beskrivelse
             it[behandlingstema] =
                 when (oppgave) {
@@ -61,33 +61,33 @@ class OppgaveRepository {
             it[aktiv_dato] = oppgave.aktivDato.toKotlinLocalDate()
             it[frist_ferdigstillelse] = oppgave.fristFerdigstillelse?.toKotlinLocalDate()
             it[prioritet] = oppgave.oppgaveFelles.prioritet.name
-            it[ekstern_referanse_id] = oppgave.sykmeldingId
+            it[sykmeldingId] = oppgave.sykmeldingId
             it[created] = LocalDateTime.now().toKotlinLocalDateTime()
             it[oppgave_opprettet] = null
             it[oppgave_id] = null
-            it[oppgavekilde] = oppgave.type.toString()
+            it[tsm_oppgavetype] = oppgave.type.toString()
         }
     }
 
-    suspend fun listBySykmeldingId(eksternId: String): List<Oppgave> = dbQuery {
+    suspend fun listByIdent(ident: String): List<Oppgave> = dbQuery {
         OpprettOppgaveTable.selectAll()
-            .where { OpprettOppgaveTable.ekstern_referanse_id eq eksternId }
-            .map { it.toOppgaveRequest() }
+            .where { OpprettOppgaveTable.personident eq ident }
+            .map { it.toOppgave() }
     }
 
-    fun ResultRow.toOppgaveRequest(): Oppgave {
-        val kilde = OppgaveType.valueOf(this[OpprettOppgaveTable.oppgavekilde])
+    fun ResultRow.toOppgave(): Oppgave {
+        val type = TsmOppgaveType.valueOf(this[OpprettOppgaveTable.tsm_oppgavetype])
         val personident = this[OpprettOppgaveTable.personident]
-        val eksternReferanseId = this[OpprettOppgaveTable.ekstern_referanse_id]
+        val sykmeldingId = this[OpprettOppgaveTable.sykmeldingId]
         val beskrivelse = this[OpprettOppgaveTable.beskrivelse]
         val oppgaveId = this[OpprettOppgaveTable.oppgave_id]?.toString()
         val aktivDato = this[OpprettOppgaveTable.aktiv_dato].toJavaLocalDate()
         val fristFerdigstillelse =
             this[OpprettOppgaveTable.frist_ferdigstillelse]?.toJavaLocalDate()
-        return when (kilde) {
-            OppgaveType.UTENLANDSK ->
+        return when (type) {
+            TsmOppgaveType.UTENLANDSK ->
                 Oppgave.Utenlandsk(
-                    sykmeldingId = eksternReferanseId,
+                    sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
                     oppgaveId = oppgaveId,
@@ -95,9 +95,9 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveType.NASJONAL ->
+            TsmOppgaveType.NASJONAL ->
                 Oppgave.Nasjonal(
-                    sykmeldingId = eksternReferanseId,
+                    sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
                     journalpostId = this[OpprettOppgaveTable.journalpost_id],
@@ -106,9 +106,9 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveType.TILBAKEDATERING ->
+            TsmOppgaveType.TILBAKEDATERING ->
                 Oppgave.Tilbakedatering(
-                    sykmeldingId = eksternReferanseId,
+                    sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
                     oppgaveId = oppgaveId,
@@ -116,9 +116,9 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveType.FORDELING ->
+            TsmOppgaveType.FORDELING ->
                 Oppgave.Fordeling(
-                    sykmeldingId = eksternReferanseId,
+                    sykmeldingId = sykmeldingId,
                     beskrivelse = beskrivelse,
                     behandlingstype = this[OpprettOppgaveTable.behandlingstype],
                     oppgaveId = oppgaveId,
@@ -126,9 +126,9 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveType.BEHANDLINGSDAGER ->
+            TsmOppgaveType.BEHANDLINGSDAGER ->
                 Oppgave.Behandlingsdager(
-                    sykmeldingId = eksternReferanseId,
+                    sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
                     journalpostId = this[OpprettOppgaveTable.journalpost_id],
@@ -137,9 +137,9 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveType.OPPFOLGING ->
+            TsmOppgaveType.OPPFOLGING ->
                 Oppgave.Oppfolging(
-                    sykmeldingId = eksternReferanseId,
+                    sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
                     tildeltEnhetsnr = this[OpprettOppgaveTable.tildelt_enhetsnr],
@@ -149,9 +149,9 @@ class OppgaveRepository {
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
-            OppgaveType.INFOTRYGD ->
+            TsmOppgaveType.INFOTRYGD ->
                 Oppgave.Infotrygd(
-                    sykmeldingId = eksternReferanseId,
+                    sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
                     journalpostId = this[OpprettOppgaveTable.journalpost_id],

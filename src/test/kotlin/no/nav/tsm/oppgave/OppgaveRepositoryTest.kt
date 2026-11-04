@@ -18,17 +18,17 @@ class OppgaveRepositoryTest : WithPostgresql() {
 
     @Test
     fun `insert and list utenlandsk oppgave`() = runTest {
-        val eksternReferanseId = UUID.randomUUID().toString()
+        val personIdent = "11111111111"
         val request =
             Utenlandsk(
-                sykmeldingId = eksternReferanseId,
-                personident = "11111111111",
+                sykmeldingId = UUID.randomUUID().toString(),
+                personident = personIdent,
                 beskrivelse = "beskrivelse",
                 aktivDato = LocalDate.of(2026, 1, 15),
                 fristFerdigstillelse = LocalDate.of(2026, 1, 20),
             )
         oppgaveRepository.insert(request)
-        val oppgaver = oppgaveRepository.listBySykmeldingId(eksternReferanseId)
+        val oppgaver = oppgaveRepository.listByIdent(personIdent)
         oppgaver shouldBe listOf(request)
     }
 }

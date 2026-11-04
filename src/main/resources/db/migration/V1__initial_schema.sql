@@ -12,9 +12,9 @@ CREATE TABLE opprett_oppgave
     aktiv_dato               DATE        NOT NULL,
     frist_ferdigstillelse    DATE,
     prioritet                TEXT        NOT NULL,
-    ekstern_referanse_id     TEXT,
+    sykmelding_id            TEXT,
     created                  TIMESTAMPTZ NOT NULL,
     oppgave_opprettet        TIMESTAMPTZ,
     oppgave_id               UUID,
-    oppgavekilde             TEXT
+    tsm_oppgavetype          TEXT
 );

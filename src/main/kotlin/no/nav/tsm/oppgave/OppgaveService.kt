@@ -1,10 +1,8 @@
 package no.nav.tsm.oppgave
 
 import arrow.core.Either
-import arrow.core.right
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import no.nav.tsm.core.model.Oppgave
-import no.nav.tsm.oppgave.OppgaveRepository
 import no.nav.tsm.oppgave.client.OppgaveClient
 import no.nav.tsm.oppgave.client.model.OppgaveClientErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse

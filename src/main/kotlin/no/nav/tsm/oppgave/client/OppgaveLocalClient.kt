@@ -8,7 +8,9 @@ import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
 
 class OppgaveLocalClient : OppgaveClient {
 
-    override suspend fun getOppgaver(ident: String): Either<OppgaveClientErrors, List<OppgaveResponse>> {
+    override suspend fun getOppgaver(
+        ident: String
+    ): Either<OppgaveClientErrors, List<OppgaveResponse>> {
         TODO("Not yet implemented")
     }
 

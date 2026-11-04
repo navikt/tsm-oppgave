@@ -5,15 +5,15 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import no.nav.tsm.oppgave.OppgaveService
-import no.nav.tsm.api.model.CreateOppgavePayload
+import no.nav.tsm.api.model.OpprettOppgavePayload
 import no.nav.tsm.api.model.toOppgave
-import no.nav.tsm.core.model.OppgaveType
+import no.nav.tsm.core.model.TsmOppgaveType
+import no.nav.tsm.oppgave.OppgaveService
 
 fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
     post("/api/oppgave") {
-        val oppgaveRequest: CreateOppgavePayload = call.receive()
-        val oppgave = oppgaveRequest.toOppgave(OppgaveType.valueOf(oppgaveRequest.kilde))
+        val oppgaveRequest: OpprettOppgavePayload = call.receive()
+        val oppgave = oppgaveRequest.toOppgave(TsmOppgaveType.valueOf(oppgaveRequest.kilde))
         oppgaveService.opprettSyncOppgave(oppgave)
         call.respond(HttpStatusCode.Accepted)
     }

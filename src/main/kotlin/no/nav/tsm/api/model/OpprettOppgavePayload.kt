@@ -2,9 +2,9 @@ package no.nav.tsm.api.model
 
 import java.time.LocalDate
 import no.nav.tsm.core.model.Oppgave
-import no.nav.tsm.core.model.OppgaveType
+import no.nav.tsm.core.model.TsmOppgaveType
 
-data class CreateOppgavePayload(
+data class OpprettOppgavePayload(
     val personident: String?,
     val tildeltEnhetsnr: String?,
     val journalpostId: String?,
@@ -16,9 +16,9 @@ data class CreateOppgavePayload(
     val kilde: String,
 )
 
-fun CreateOppgavePayload.toOppgave(kilde: OppgaveType): Oppgave {
+fun OpprettOppgavePayload.toOppgave(kilde: TsmOppgaveType): Oppgave {
     return when (kilde) {
-        OppgaveType.UTENLANDSK ->
+        TsmOppgaveType.UTENLANDSK ->
             Oppgave.Utenlandsk(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -27,7 +27,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveType): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveType.NASJONAL ->
+        TsmOppgaveType.NASJONAL ->
             Oppgave.Nasjonal(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -37,7 +37,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveType): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveType.TILBAKEDATERING ->
+        TsmOppgaveType.TILBAKEDATERING ->
             Oppgave.Tilbakedatering(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -46,7 +46,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveType): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveType.FORDELING ->
+        TsmOppgaveType.FORDELING ->
             Oppgave.Fordeling(
                 sykmeldingId = sykmeldingId,
                 beskrivelse = beskrivelse,
@@ -55,7 +55,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveType): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveType.BEHANDLINGSDAGER ->
+        TsmOppgaveType.BEHANDLINGSDAGER ->
             Oppgave.Behandlingsdager(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -64,7 +64,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveType): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveType.OPPFOLGING ->
+        TsmOppgaveType.OPPFOLGING ->
             Oppgave.Oppfolging(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
@@ -75,7 +75,7 @@ fun CreateOppgavePayload.toOppgave(kilde: OppgaveType): Oppgave {
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
-        OppgaveType.INFOTRYGD ->
+        TsmOppgaveType.INFOTRYGD ->
             Oppgave.Infotrygd(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
