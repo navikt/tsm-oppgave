@@ -69,6 +69,7 @@ sealed interface Oppgave {
         override val fristFerdigstillelse: LocalDate?,
         val versjon: Int? = null,
         val personident: String,
+        val journalpostId: String?,
         val endretAvEnhetsnr: String? = null,
     ) : Oppgave {
         val tildeltEnhetsnr: String = TildeltEnhetsnr.UTLAND.verdi
@@ -117,6 +118,7 @@ sealed interface Oppgave {
         override val status: String? = null,
         override val aktivDato: LocalDate,
         override val fristFerdigstillelse: LocalDate?,
+        val journalpostId: String?,
         val behandlingstype: String?,
     ) : Oppgave {
         override val type = TsmOppgaveType.FORDELING

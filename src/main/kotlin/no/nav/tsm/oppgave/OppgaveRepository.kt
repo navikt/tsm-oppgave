@@ -84,6 +84,7 @@ class OppgaveRepository {
         val aktivDato = this[OpprettOppgaveTable.aktiv_dato].toJavaLocalDate()
         val fristFerdigstillelse =
             this[OpprettOppgaveTable.frist_ferdigstillelse]?.toJavaLocalDate()
+        val journalpostId = this[OpprettOppgaveTable.journalpost_id]
         return when (type) {
             TsmOppgaveType.UTENLANDSK ->
                 Oppgave.Utenlandsk(
@@ -92,6 +93,7 @@ class OppgaveRepository {
                     beskrivelse = beskrivelse,
                     oppgaveId = oppgaveId,
                     aktivDato = aktivDato,
+                    journalpostId = journalpostId,
                     fristFerdigstillelse = fristFerdigstillelse,
                 )
 
@@ -124,6 +126,7 @@ class OppgaveRepository {
                     oppgaveId = oppgaveId,
                     aktivDato = aktivDato,
                     fristFerdigstillelse = fristFerdigstillelse,
+                    journalpostId = journalpostId,
                 )
 
             TsmOppgaveType.BEHANDLINGSDAGER ->

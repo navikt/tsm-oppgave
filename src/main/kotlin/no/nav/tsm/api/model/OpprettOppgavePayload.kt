@@ -6,24 +6,24 @@ import no.nav.tsm.core.model.TsmOppgaveType
 
 data class OpprettOppgavePayload(
     val personident: String?,
-    val tildeltEnhetsnr: String?,
-    val journalpostId: String?,
+    val tildeltEnhetsnr: String? = null,
+    val journalpostId: String? = null,
     val beskrivelse: String?,
-    val behandlingstype: String?,
-    val aktivDato: LocalDate,
+    val behandlingstype: String? = null,
     val fristFerdigstillelse: LocalDate,
     val sykmeldingId: String,
-    val kilde: String,
+    val type: String,
 )
 
-fun OpprettOppgavePayload.toOppgave(kilde: TsmOppgaveType): Oppgave {
-    return when (kilde) {
+fun OpprettOppgavePayload.toOppgave(type: TsmOppgaveType): Oppgave {
+    return when (type) {
         TsmOppgaveType.UTENLANDSK ->
             Oppgave.Utenlandsk(
                 sykmeldingId = sykmeldingId,
                 personident = requireNotNull(personident),
                 beskrivelse = beskrivelse,
                 aktivDato = LocalDate.now(),
+                journalpostId = journalpostId,
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
@@ -52,6 +52,7 @@ fun OpprettOppgavePayload.toOppgave(kilde: TsmOppgaveType): Oppgave {
                 beskrivelse = beskrivelse,
                 behandlingstype = behandlingstype,
                 aktivDato = LocalDate.now(),
+                journalpostId = journalpostId,
                 fristFerdigstillelse = fristFerdigstillelse,
             )
 
