@@ -25,7 +25,7 @@ class OppgaveService(
     }
 
     @WithSpan
-    suspend fun oppretAsyncOppgave(oppgave: Oppgave): Either<OppgaveServiceErrors, Oppgave> {
+    suspend fun opprettOppgave(oppgave: Oppgave): Either<OppgaveServiceErrors, Oppgave> {
         val insertOppgave = oppgaveRepository.insert(oppgave)
         return TODO()
     }
@@ -36,4 +36,11 @@ class OppgaveService(
         oppgaveClient.createOppgave(oppgave = oppgave.toOpprettOppgaveRequest())
         return TODO()
     }
+
+    @WithSpan
+    suspend fun oppretAsyncOppgave(oppgave: Oppgave): Either<OppgaveServiceErrors, Oppgave> {
+        val insertOppgave = oppgaveRepository.insert(oppgave)
+        return TODO()
+    }
+
 }
