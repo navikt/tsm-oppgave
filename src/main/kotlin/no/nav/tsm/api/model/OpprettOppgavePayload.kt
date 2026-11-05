@@ -12,11 +12,11 @@ data class OpprettOppgavePayload(
     val behandlingstype: String? = null,
     val fristFerdigstillelse: LocalDate,
     val sykmeldingId: String,
-    val kilde: String,
+    val type: String,
 )
 
-fun OpprettOppgavePayload.toOppgave(kilde: TsmOppgaveType): Oppgave {
-    return when (kilde) {
+fun OpprettOppgavePayload.toOppgave(type: TsmOppgaveType): Oppgave {
+    return when (type) {
         TsmOppgaveType.UTENLANDSK ->
             Oppgave.Utenlandsk(
                 sykmeldingId = sykmeldingId,

@@ -25,7 +25,7 @@ class ToOppgaveTest {
                 tildeltEnhetsnr = null,
                 journalpostId = null,
                 behandlingstype = null,
-                kilde = "UTENLANDSK",
+                type = "UTENLANDSK",
             )
         val oppgave = utenlandskRequest.toOppgave(TsmOppgaveType.UTENLANDSK) as Oppgave.Utenlandsk
         oppgave.type shouldBe TsmOppgaveType.UTENLANDSK
@@ -47,7 +47,7 @@ class ToOppgaveTest {
                 tildeltEnhetsnr = null,
                 journalpostId = null,
                 behandlingstype = null,
-                kilde = "NASJONAL",
+                type = "NASJONAL",
             )
         val oppgave = nasjonalOppgaveRequest.toOppgave(TsmOppgaveType.NASJONAL) as Oppgave.Nasjonal
         oppgave.type shouldBe TsmOppgaveType.NASJONAL
@@ -67,9 +67,11 @@ class ToOppgaveTest {
                 tildeltEnhetsnr = null,
                 journalpostId = null,
                 behandlingstype = null,
-                kilde = "TILBAKEDATERING",
+                type = "TILBAKEDATERING",
             )
-        val oppgave = tilbakedateringRequest.toOppgave(TsmOppgaveType.TILBAKEDATERING) as Oppgave.Tilbakedatering
+        val oppgave =
+            tilbakedateringRequest.toOppgave(TsmOppgaveType.TILBAKEDATERING)
+                as Oppgave.Tilbakedatering
         oppgave.type shouldBe TsmOppgaveType.TILBAKEDATERING
         oppgave.personident shouldBe tilbakedateringRequest.personident
         oppgave.sykmeldingId shouldBe tilbakedateringRequest.sykmeldingId
@@ -87,7 +89,7 @@ class ToOppgaveTest {
                 tildeltEnhetsnr = null,
                 journalpostId = null,
                 behandlingstype = "test",
-                kilde = "FORDELING",
+                type = "FORDELING",
             )
         val oppgave = fordelingsRequest.toOppgave(TsmOppgaveType.FORDELING) as Oppgave.Fordeling
         oppgave.type shouldBe TsmOppgaveType.FORDELING
@@ -106,9 +108,11 @@ class ToOppgaveTest {
                 tildeltEnhetsnr = null,
                 journalpostId = null,
                 behandlingstype = null,
-                kilde = "BEHANDLINGSDAGER",
+                type = "BEHANDLINGSDAGER",
             )
-        val oppgave = behandlingsdagerRequest.toOppgave(TsmOppgaveType.BEHANDLINGSDAGER) as Oppgave.Behandlingsdager
+        val oppgave =
+            behandlingsdagerRequest.toOppgave(TsmOppgaveType.BEHANDLINGSDAGER)
+                as Oppgave.Behandlingsdager
         oppgave.type shouldBe TsmOppgaveType.BEHANDLINGSDAGER
         oppgave.sykmeldingId shouldBe behandlingsdagerRequest.sykmeldingId
         oppgave.behandlingstema shouldBe Behandlingstema.BEHANDLINGSDAGER.verdi
@@ -125,7 +129,7 @@ class ToOppgaveTest {
                 tildeltEnhetsnr = null,
                 journalpostId = null,
                 behandlingstype = null,
-                kilde = "OPPFOLGING",
+                type = "OPPFOLGING",
             )
         val oppgave = oppfolgingRequest.toOppgave(TsmOppgaveType.OPPFOLGING) as Oppgave.Oppfolging
         oppgave.type shouldBe TsmOppgaveType.OPPFOLGING
@@ -143,7 +147,7 @@ class ToOppgaveTest {
                 tildeltEnhetsnr = null,
                 journalpostId = null,
                 behandlingstype = null,
-                kilde = "INFOTRYGD",
+                type = "INFOTRYGD",
             )
         val oppgave = infotrygdRequest.toOppgave(TsmOppgaveType.INFOTRYGD) as Oppgave.Infotrygd
         oppgave.type shouldBe TsmOppgaveType.INFOTRYGD
