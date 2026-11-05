@@ -14,7 +14,7 @@ fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
     post("/api/oppgave") {
         val oppgaveRequest: OpprettOppgavePayload = call.receive()
         val oppgave = oppgaveRequest.toOppgave(TsmOppgaveType.valueOf(oppgaveRequest.type))
-        oppgaveService.opprettSyncOppgave(oppgave)
+        oppgaveService.opprettOppgave(oppgave)
         call.respond(HttpStatusCode.Accepted)
     }
 }
