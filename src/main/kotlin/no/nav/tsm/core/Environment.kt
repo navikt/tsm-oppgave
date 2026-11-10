@@ -1,6 +1,7 @@
-package no.nav.tsm.core.utils
+package no.nav.tsm.core
 
-import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.config.*
+import kotlin.time.Duration
 import no.nav.tsm.ktor.auth.texas.TexasTarget
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.ktor.nais.RuntimeCluster
@@ -14,8 +15,13 @@ class ExternalApi(val oppgaveApi: ExternalApiConfig, val safApi: ExternalApiConf
 
 class ExternalApiConfig(val url: String)
 
+class ProducerJob(val delay: Duration, val hungTimeout: Duration)
+
+class JobsConfig(val oppgaveCreator: ProducerJob)
+
 class Environment(
     val runtime: RuntimeConfig,
+    val jobs: JobsConfig,
     val postgres: PostgresConfig,
     val external: () -> ExternalApi,
 )
@@ -23,6 +29,14 @@ class Environment(
 fun initializeEnvironment(config: ApplicationConfig): Environment {
     return Environment(
         runtime = RuntimeConfig(cluster = getRuntimeCluster()),
+        jobs =
+            JobsConfig(
+                oppgaveCreator =
+                    ProducerJob(
+                        delay = config.property("jobs.oppgaveCreator.delay").getAs(),
+                        hungTimeout = config.property("jobs.oppgaveCreator.hungTimeout").getAs(),
+                    )
+            ),
         postgres =
             PostgresConfig(
                 jdbc = config.property("postgres.jdbc").getString(),

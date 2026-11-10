@@ -17,18 +17,23 @@ fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
     post("/api/oppgave") {
         val oppgaveRequest: OpprettOppgavePayload = call.receive()
         val oppgave = oppgaveRequest.toOppgave(TsmOppgaveType.valueOf(oppgaveRequest.type))
-        oppgaveService.opprettOppgave(oppgave).fold(
-            ifLeft = { error ->
-                if (error == OppgaveServiceErrors.NotSupported) {
-                    call.respond(HttpStatusCode.BadRequest, "Ikke mulig å opprette oppgave for type ${oppgaveRequest.type}. SykmeldingId: ${oppgaveRequest.sykmeldingId}")
-                }
-                logger.error("Something went really wrong, check logs")
-                call.respond(HttpStatusCode.InternalServerError)
-            },
-            ifRight = { oppgave ->
-                logger.info("Opprett oppgave was successful")
-                call.respond(HttpStatusCode.Accepted)
-            }
-        )
+        oppgaveService
+            .opprettOppgave(oppgave)
+            .fold(
+                ifLeft = { error ->
+                    if (error == OppgaveServiceErrors.NotSupported) {
+                        call.respond(
+                            HttpStatusCode.BadRequest,
+                            "Ikke mulig å opprette oppgave for type ${oppgaveRequest.type}. SykmeldingId: ${oppgaveRequest.sykmeldingId}",
+                        )
+                    }
+                    logger.error("Something went really wrong, check logs")
+                    call.respond(HttpStatusCode.InternalServerError)
+                },
+                ifRight = {
+                    logger.info("Opprett oppgave was successful")
+                    call.respond(HttpStatusCode.Accepted)
+                },
+            )
     }
 }

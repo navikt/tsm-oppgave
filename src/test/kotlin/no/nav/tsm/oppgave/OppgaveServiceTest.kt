@@ -1,20 +1,15 @@
 package no.nav.tsm.oppgave
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.raise.context.bind
-import arrow.core.right
 import io.kotest.matchers.shouldBe
-import io.mockk.InternalPlatformDsl.toStr
 import io.mockk.mockk
+import java.time.LocalDate
+import java.util.UUID
+import kotlin.test.DefaultAsserter.fail
 import kotlinx.coroutines.test.runTest
 import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.oppgave.client.OppgaveClient
 import no.nav.tsm.utils.WithPostgresql
 import org.junit.Test
-import java.time.LocalDate
-import java.util.UUID
-import kotlin.test.DefaultAsserter.fail
 
 class OppgaveServiceTest : WithPostgresql() {
     init {
@@ -33,9 +28,7 @@ class OppgaveServiceTest : WithPostgresql() {
             ifLeft = { error: OppgaveServiceErrors ->
                 fail("oppgave should be saved and not return any errors. Got $error")
             },
-            ifRight = { oppgave ->
-                oppgave shouldBe behandlingsdagerOppgave
-            }
+            ifRight = { oppgave -> oppgave shouldBe behandlingsdagerOppgave },
         )
     }
 
@@ -46,9 +39,7 @@ class OppgaveServiceTest : WithPostgresql() {
             ifLeft = { error: OppgaveServiceErrors ->
                 error shouldBe OppgaveServiceErrors.NotSupported
             },
-            ifRight = { oppgave ->
-                fail("oppgave should not have been saved")
-            }
+            ifRight = { oppgave -> fail("oppgave should not have been saved") },
         )
     }
 }
@@ -56,19 +47,21 @@ class OppgaveServiceTest : WithPostgresql() {
 val IDENT = "11111111111"
 val JOURNALPOSTID = "123456"
 
-val behandlingsdagerOppgave = Oppgave.Behandlingsdager(
-    sykmeldingId = UUID.randomUUID().toString(),
-    beskrivelse = null,
-    aktivDato = LocalDate.now(),
-    fristFerdigstillelse = LocalDate.now().plusDays(3),
-    personident = IDENT,
-)
+val behandlingsdagerOppgave =
+    Oppgave.Behandlingsdager(
+        sykmeldingId = UUID.randomUUID().toString(),
+        beskrivelse = null,
+        aktivDato = LocalDate.now(),
+        fristFerdigstillelse = LocalDate.now().plusDays(3),
+        personident = IDENT,
+    )
 
-val utenlandskOppgave = Oppgave.Utenlandsk(
-    sykmeldingId = UUID.randomUUID().toString(),
-    beskrivelse = null,
-    aktivDato = LocalDate.now(),
-    fristFerdigstillelse = LocalDate.now().plusDays(3),
-    personident = IDENT,
-    journalpostId = JOURNALPOSTID,
-)
+val utenlandskOppgave =
+    Oppgave.Utenlandsk(
+        sykmeldingId = UUID.randomUUID().toString(),
+        beskrivelse = null,
+        aktivDato = LocalDate.now(),
+        fristFerdigstillelse = LocalDate.now().plusDays(3),
+        personident = IDENT,
+        journalpostId = JOURNALPOSTID,
+    )

@@ -9,7 +9,6 @@ import no.nav.tsm.core.model.TsmOppgaveType
 import no.nav.tsm.oppgave.client.OppgaveClient
 import no.nav.tsm.oppgave.client.model.OppgaveClientErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
-import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
 import no.nav.tsm.oppgave.client.model.toOpprettOppgaveRequest
 
 enum class OppgaveServiceErrors {

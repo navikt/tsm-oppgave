@@ -11,62 +11,64 @@ import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.core.model.TsmOppgaveType
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.insertReturning
 import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.upsertReturning
 
 class OppgaveRepository {
 
     suspend fun insert(oppgave: Oppgave) = dbQuery {
-        OpprettOppgaveTable.upsertReturning {
-            it[id] = UUID.randomUUID()
-            it[personident] =
-                when (oppgave) {
-                    is Oppgave.Nasjonal -> oppgave.personident
-                    is Oppgave.Behandlingsdager -> oppgave.personident
-                    is Oppgave.Oppfolging -> oppgave.personident
-                    is Oppgave.Infotrygd -> oppgave.personident
-                    is Oppgave.Utenlandsk -> oppgave.personident
-                    is Oppgave.Tilbakedatering -> oppgave.personident
-                    else -> null
-                }
-            it[tildelt_enhetsnr] =
-                when (oppgave) {
-                    is Oppgave.Utenlandsk -> oppgave.tildeltEnhetsnr
-                    is Oppgave.Oppfolging -> oppgave.tildeltEnhetsnr
-                    else -> null
-                }
-            it[journalpost_id] =
-                when (oppgave) {
-                    is Oppgave.Nasjonal -> oppgave.journalpostId
-                    is Oppgave.Behandlingsdager -> oppgave.journalpostId
-                    is Oppgave.Oppfolging -> oppgave.journalpostId
-                    is Oppgave.Infotrygd -> oppgave.journalpostId
-                    else -> null
-                }
-            it[behandles_av_applikasjon] = oppgave.oppgaveFelles.behandlesAvApplikasjon.name
-            it[beskrivelse] = oppgave.beskrivelse
-            it[behandlingstema] =
-                when (oppgave) {
-                    is Oppgave.Behandlingsdager -> oppgave.behandlingstema
-                    else -> null
-                }
-            it[oppgavetype] = oppgave.oppgaveFelles.oppgaveType.name
-            it[behandlingstype] =
-                when (oppgave) {
-                    is Oppgave.Utenlandsk -> oppgave.behandlingstype
-                    is Oppgave.Tilbakedatering -> oppgave.behandlingsType
-                    is Oppgave.Fordeling -> oppgave.behandlingstype
-                    else -> null
-                }
-            it[aktiv_dato] = oppgave.aktivDato.toKotlinLocalDate()
-            it[frist_ferdigstillelse] = oppgave.fristFerdigstillelse?.toKotlinLocalDate()
-            it[prioritet] = oppgave.oppgaveFelles.prioritet.name
-            it[sykmeldingId] = oppgave.sykmeldingId
-            it[created] = LocalDateTime.now().toKotlinLocalDateTime()
-            it[oppgave_opprettet] = null
-            it[oppgave_id] = null
-            it[tsm_oppgavetype] = oppgave.type.toString()
-        }.single().toOppgave()
+        OpprettOppgaveTable.insertReturning {
+                it[id] = UUID.randomUUID()
+                it[personident] =
+                    when (oppgave) {
+                        is Oppgave.Nasjonal -> oppgave.personident
+                        is Oppgave.Behandlingsdager -> oppgave.personident
+                        is Oppgave.Oppfolging -> oppgave.personident
+                        is Oppgave.Infotrygd -> oppgave.personident
+                        is Oppgave.Utenlandsk -> oppgave.personident
+                        is Oppgave.Tilbakedatering -> oppgave.personident
+                        else -> null
+                    }
+                it[tildelt_enhetsnr] =
+                    when (oppgave) {
+                        is Oppgave.Utenlandsk -> oppgave.tildeltEnhetsnr
+                        is Oppgave.Oppfolging -> oppgave.tildeltEnhetsnr
+                        else -> null
+                    }
+                it[journalpost_id] =
+                    when (oppgave) {
+                        is Oppgave.Nasjonal -> oppgave.journalpostId
+                        is Oppgave.Behandlingsdager -> oppgave.journalpostId
+                        is Oppgave.Oppfolging -> oppgave.journalpostId
+                        is Oppgave.Infotrygd -> oppgave.journalpostId
+                        else -> null
+                    }
+                it[behandles_av_applikasjon] = oppgave.oppgaveFelles.behandlesAvApplikasjon.name
+                it[beskrivelse] = oppgave.beskrivelse
+                it[behandlingstema] =
+                    when (oppgave) {
+                        is Oppgave.Behandlingsdager -> oppgave.behandlingstema
+                        else -> null
+                    }
+                it[oppgavetype] = oppgave.oppgaveFelles.oppgaveType.name
+                it[behandlingstype] =
+                    when (oppgave) {
+                        is Oppgave.Utenlandsk -> oppgave.behandlingstype
+                        is Oppgave.Tilbakedatering -> oppgave.behandlingsType
+                        is Oppgave.Fordeling -> oppgave.behandlingstype
+                        else -> null
+                    }
+                it[aktiv_dato] = oppgave.aktivDato.toKotlinLocalDate()
+                it[frist_ferdigstillelse] = oppgave.fristFerdigstillelse?.toKotlinLocalDate()
+                it[prioritet] = oppgave.oppgaveFelles.prioritet.name
+                it[sykmeldingId] = oppgave.sykmeldingId
+                it[created] = LocalDateTime.now().toKotlinLocalDateTime()
+                it[oppgave_opprettet] = null
+                it[oppgave_id] = null
+                it[tsm_oppgavetype] = oppgave.type.toString()
+            }
+            .single()
+            .toOppgave()
     }
 
     suspend fun listByIdent(ident: String): List<Oppgave> = dbQuery {

@@ -5,8 +5,8 @@ import io.ktor.client.engine.apache5.*
 import io.ktor.client.plugins.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.di.*
-import no.nav.tsm.core.utils.Environment
-import no.nav.tsm.core.utils.initializeEnvironment
+import no.nav.tsm.core.Environment
+import no.nav.tsm.core.initializeEnvironment
 
 fun Application.configureDependencies() {
     val config = environment.config

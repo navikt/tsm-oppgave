@@ -1,0 +1,139 @@
+package no.nav.tsm.scheduled
+
+import io.ktor.server.plugins.di.annotations.*
+import io.opentelemetry.api.trace.Span
+import io.opentelemetry.instrumentation.annotations.WithSpan
+import java.time.OffsetDateTime
+import javax.print.attribute.standard.JobName
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import no.nav.tsm.ktor.logger
+import no.nav.tsm.scheduled.jobs.JobStatus
+
+enum class JobName {
+    CREATE_OPPGAVE
+}
+
+data class Job(
+    val jobName: JobName,
+    val desiredState: JobStatus,
+    val updatedAt: OffsetDateTime,
+    val updatedBy: String,
+)
+
+data class RunnerJobStatus(
+    val runner: String,
+    val job: JobName,
+    val state: JobStatus,
+    val updatedAt: OffsetDateTime,
+)
+
+enum class JobUpdateAction {
+    START,
+    STOP,
+}
+
+data class JobUpdatePayload(val state: JobUpdateAction)
+
+class JobSchedulerService(
+    private val jobs: List<Job>,
+    // private val jobRepository: JobRepository,
+    @Named("runner") private val runner: String,
+) {
+    private val updateInterval = 10.seconds
+    private val logger = logger()
+
+    suspend fun setup() {
+        logger.debug("Setting up JobScheduler")
+        /*jobs.forEach {
+            jobRepository.updateJobStatus(
+                runner = runner,
+                jobName = it.jobName,
+                jobStatus = it.status.value,
+            )
+        }*/
+    }
+
+    suspend fun start() = coroutineScope {
+        jobs.forEach { job ->
+            launch {
+                /*job.status.collect { newStatus ->
+                    logger.debug("Job(${job.jobName}) status changed to $newStatus")
+                    try {
+                        jobRepository.updateJobStatus(
+                            runner = runner,
+                            jobName = job.jobName,
+                            jobStatus = newStatus,
+                        )
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        logger.error(
+                            "Failed to persist status $newStatus for Job(${job.jobName})",
+                            e,
+                        )
+                    }
+                }*/
+            }
+        }
+
+    /*jobRepository.deleteOldJobsRunners().onEach {
+            logger.info("Old job runner: ${it.runner } deleted")
+        }
+
+        while (isActive) {
+            try {
+                updateJobs()
+                updateJobStatusTimestamps()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error(
+                    "Job scheduler tick failed, keeping scheduler alive and retrying in $updateInterval",
+                    e,
+                )
+            }
+            delay(updateInterval)
+        }
+*/ }
+
+    private suspend fun updateJobStatusTimestamps() {
+        // jobRepository.updateJobStatusTimestamp(runner)
+    }
+
+    @WithSpan(inheritContext = false)
+    suspend fun stop() {
+        val span = Span.current()
+        // jobs.forEach { jobManager -> jobManager.stop() }
+        /*val deleted =
+        obRepository.deleteRunner(runner).onEach {
+            logger.info("Job runner: ${it.runner } deleted")
+        }*/
+
+        // span.setAttribute("jobStatus.deleted.counter", deleted.size.toLong())
+    }
+
+    /** Don't @WithSpan this, as it causes every single span in all jobs to be nested under this. */
+    private suspend fun updateJobs() {
+        logger.debug("Updating jobs statuses")
+        /*val jobStates = jobRepository.getJobs().associate { it.jobName to it.desiredState }
+
+        val span = Span.current()
+        span.setAttribute("job.count", jobStates.size.toLong())
+
+        jobs.forEach { job ->
+            val desiredState = jobStates[job.jobName]
+            requireNotNull(desiredState) { "No desired state found for job ${job.jobName}" }
+            if (desiredState != job.status.value) {
+                logger.info("Updating job ${job.jobName} to desired state $desiredState")
+                when (desiredState) {
+                    JobStatus.RUNNING -> job.start()
+                    JobStatus.STOPPED -> job.stop()
+                    else ->
+                        logger.warn("Unknown desired state $desiredState for job ${job.jobName}")
+                }
+            }
+        }*/
+    }
+}

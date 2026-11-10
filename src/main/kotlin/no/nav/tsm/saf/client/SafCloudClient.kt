@@ -14,8 +14,8 @@ import io.ktor.http.contentType
 import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.plugins.di.annotations.Named
 import io.opentelemetry.api.trace.Span
-import no.nav.tsm.core.utils.Environment
-import no.nav.tsm.core.utils.toFssCluster
+import no.nav.tsm.core.Environment
+import no.nav.tsm.core.toFssCluster
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.saf.client.model.Journalpost
