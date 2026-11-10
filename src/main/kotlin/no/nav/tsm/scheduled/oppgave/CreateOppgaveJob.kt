@@ -1,5 +1,6 @@
-package no.nav.tsm.scheduled
+package no.nav.tsm.scheduled.oppgave
 
+import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +10,8 @@ import kotlinx.coroutines.withContext
 import no.nav.tsm.core.Environment
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.oppgave.OppgaveService
-import no.nav.tsm.scheduled.jobs.AbstractJob
+import no.nav.tsm.scheduled.core.JobName
+import no.nav.tsm.scheduled.core.jobs.AbstractJob
 
 class CreateOppgaveJob(
     private val oppgaveService: OppgaveService,
@@ -25,10 +27,28 @@ class CreateOppgaveJob(
         withContext(Dispatchers.IO) {
             while (isActive) {
                 delay(batchDelay)
-                logger.debug("Running sykmeldinger producer job (${batchDelay}ms)")
+                logger.debug("Running create oppgave job (${batchDelay}ms)")
                 handleOppgaveBatch()
             }
         }
 
-    @WithSpan(inheritContext = false) private suspend fun handleOppgaveBatch() {}
+    @WithSpan(inheritContext = false) private suspend fun handleOppgaveBatch() {
+        val span = Span.current()
+
+        // TODO reset hanging jobs
+
+        var count = 0
+        do {
+            val (next, didProduce) = createNextOppgave()
+            if (next != null && didProduce) count++
+        } while (next != null)
+
+        if (count > 0) logger.info("Finished create oppgaver batch, created $count oppgaver")
+
+        span.setAttribute("create-oppgave-job.oppgaver-created", count.toString())
+    }
+
+    private fun createNextOppgave(): Pair<CreateOppgave, Boolean> {
+        TODO("Not yet implemented")
+    }
 }

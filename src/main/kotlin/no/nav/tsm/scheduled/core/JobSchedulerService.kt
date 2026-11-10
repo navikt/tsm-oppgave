@@ -1,4 +1,4 @@
-package no.nav.tsm.scheduled
+package no.nav.tsm.scheduled.core
 
 import io.ktor.server.plugins.di.annotations.*
 import io.opentelemetry.api.trace.Span
@@ -9,7 +9,8 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.scheduled.jobs.JobStatus
+import no.nav.tsm.scheduled.core.db.JobRepository
+import no.nav.tsm.scheduled.core.jobs.JobStatus
 
 enum class JobName {
     CREATE_OPPGAVE
@@ -37,8 +38,8 @@ enum class JobUpdateAction {
 data class JobUpdatePayload(val state: JobUpdateAction)
 
 class JobSchedulerService(
-    private val jobs: List<Job>,
-    // private val jobRepository: JobRepository,
+    private val jobs: List<Job>, // TODO remove?
+    private val jobRepository: JobRepository,
     @Named("runner") private val runner: String,
 ) {
     private val updateInterval = 10.seconds

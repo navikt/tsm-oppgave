@@ -36,6 +36,8 @@ class OppgaveService(
         }
 
         val createdOppgave = oppgaveRepository.insert(oppgave)
+        // TODO lagre info i createOppgaveRepo
+
         return createdOppgave.right()
     }
 

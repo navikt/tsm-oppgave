@@ -5,8 +5,11 @@ import org.jetbrains.exposed.v1.core.java.javaUUID
 import org.jetbrains.exposed.v1.datetime.date
 import org.jetbrains.exposed.v1.datetime.datetime
 
-object OpprettOppgaveTable : Table("opprett_oppgave") {
+object OppgaveTable : Table("oppgave") {
     val id = javaUUID("id")
+    val created = datetime("created")
+    val oppgave_opprettet = datetime("oppgave_opprettet").nullable() // TODO move?
+
     val personident = text("personident").nullable()
     val tildelt_enhetsnr = text("tildelt_enhetsnr").nullable()
     val journalpost_id = text("journalpost_id").nullable()
@@ -16,11 +19,10 @@ object OpprettOppgaveTable : Table("opprett_oppgave") {
     val oppgavetype = text("oppgavetype")
     val behandlingstype = text("behandlingstype").nullable()
     val aktiv_dato = date("aktiv_dato")
+    val status = text("status").nullable()
     val frist_ferdigstillelse = date("frist_ferdigstillelse").nullable()
     val prioritet = text("prioritet")
     val sykmeldingId = text("sykmelding_id")
-    val created = datetime("created")
-    val oppgave_opprettet = datetime("oppgave_opprettet").nullable()
     val oppgave_id = javaUUID("oppgave_id").nullable()
     val tsm_oppgavetype = text("tsm_oppgavetype")
 }

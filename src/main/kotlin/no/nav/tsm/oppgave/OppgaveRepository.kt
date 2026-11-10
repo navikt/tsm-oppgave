@@ -5,7 +5,7 @@ import java.util.UUID
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toKotlinLocalDateTime
-import no.nav.tsm.core.db.OpprettOppgaveTable
+import no.nav.tsm.core.db.OppgaveTable
 import no.nav.tsm.core.db.dbQuery
 import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.core.model.TsmOppgaveType
@@ -17,7 +17,7 @@ import org.jetbrains.exposed.v1.jdbc.selectAll
 class OppgaveRepository {
 
     suspend fun insert(oppgave: Oppgave) = dbQuery {
-        OpprettOppgaveTable.insertReturning {
+        OppgaveTable.insertReturning {
                 it[id] = UUID.randomUUID()
                 it[personident] =
                     when (oppgave) {
@@ -72,27 +72,27 @@ class OppgaveRepository {
     }
 
     suspend fun listByIdent(ident: String): List<Oppgave> = dbQuery {
-        OpprettOppgaveTable.selectAll()
-            .where { OpprettOppgaveTable.personident eq ident }
+        OppgaveTable.selectAll()
+            .where { OppgaveTable.personident eq ident }
             .map { it.toOppgave() }
     }
 
     suspend fun listBySykmeldingId(sykmeldingId: String): List<Oppgave> = dbQuery {
-        OpprettOppgaveTable.selectAll()
-            .where { OpprettOppgaveTable.sykmeldingId eq sykmeldingId }
+        OppgaveTable.selectAll()
+            .where { OppgaveTable.sykmeldingId eq sykmeldingId }
             .map { it.toOppgave() }
     }
 
     fun ResultRow.toOppgave(): Oppgave {
-        val type = TsmOppgaveType.valueOf(this[OpprettOppgaveTable.tsm_oppgavetype])
-        val personident = this[OpprettOppgaveTable.personident]
-        val sykmeldingId = this[OpprettOppgaveTable.sykmeldingId]
-        val beskrivelse = this[OpprettOppgaveTable.beskrivelse]
-        val oppgaveId = this[OpprettOppgaveTable.oppgave_id]?.toString()
-        val aktivDato = this[OpprettOppgaveTable.aktiv_dato].toJavaLocalDate()
+        val type = TsmOppgaveType.valueOf(this[OppgaveTable.tsm_oppgavetype])
+        val personident = this[OppgaveTable.personident]
+        val sykmeldingId = this[OppgaveTable.sykmeldingId]
+        val beskrivelse = this[OppgaveTable.beskrivelse]
+        val oppgaveId = this[OppgaveTable.oppgave_id]?.toString()
+        val aktivDato = this[OppgaveTable.aktiv_dato].toJavaLocalDate()
         val fristFerdigstillelse =
-            this[OpprettOppgaveTable.frist_ferdigstillelse]?.toJavaLocalDate()
-        val journalpostId = this[OpprettOppgaveTable.journalpost_id]
+            this[OppgaveTable.frist_ferdigstillelse]?.toJavaLocalDate()
+        val journalpostId = this[OppgaveTable.journalpost_id]
         return when (type) {
             TsmOppgaveType.UTENLANDSK ->
                 Oppgave.Utenlandsk(
@@ -110,7 +110,7 @@ class OppgaveRepository {
                     sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
-                    journalpostId = this[OpprettOppgaveTable.journalpost_id],
+                    journalpostId = this[OppgaveTable.journalpost_id],
                     oppgaveId = oppgaveId,
                     aktivDato = aktivDato,
                     fristFerdigstillelse = fristFerdigstillelse,
@@ -130,7 +130,7 @@ class OppgaveRepository {
                 Oppgave.Fordeling(
                     sykmeldingId = sykmeldingId,
                     beskrivelse = beskrivelse,
-                    behandlingstype = this[OpprettOppgaveTable.behandlingstype],
+                    behandlingstype = this[OppgaveTable.behandlingstype],
                     oppgaveId = oppgaveId,
                     aktivDato = aktivDato,
                     fristFerdigstillelse = fristFerdigstillelse,
@@ -142,7 +142,7 @@ class OppgaveRepository {
                     sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
-                    journalpostId = this[OpprettOppgaveTable.journalpost_id],
+                    journalpostId = this[OppgaveTable.journalpost_id],
                     oppgaveId = oppgaveId,
                     aktivDato = aktivDato,
                     fristFerdigstillelse = fristFerdigstillelse,
@@ -153,8 +153,8 @@ class OppgaveRepository {
                     sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
-                    tildeltEnhetsnr = this[OpprettOppgaveTable.tildelt_enhetsnr],
-                    journalpostId = this[OpprettOppgaveTable.journalpost_id],
+                    tildeltEnhetsnr = this[OppgaveTable.tildelt_enhetsnr],
+                    journalpostId = this[OppgaveTable.journalpost_id],
                     oppgaveId = oppgaveId,
                     aktivDato = aktivDato,
                     fristFerdigstillelse = fristFerdigstillelse,
@@ -165,7 +165,7 @@ class OppgaveRepository {
                     sykmeldingId = sykmeldingId,
                     personident = requireNotNull(personident),
                     beskrivelse = beskrivelse,
-                    journalpostId = this[OpprettOppgaveTable.journalpost_id],
+                    journalpostId = this[OppgaveTable.journalpost_id],
                     oppgaveId = oppgaveId,
                     aktivDato = aktivDato,
                     fristFerdigstillelse = fristFerdigstillelse,
