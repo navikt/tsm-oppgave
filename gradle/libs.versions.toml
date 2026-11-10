@@ -10,6 +10,7 @@ postgres = "42.7.14"
 
 testcontainers = "2.0.5"
 kotest-assertions = "6.2.6"
+mockk = "1.14.11"
 
 detekt = "2.0.0-alpha.6"
 spotless = "8.10.4"
@@ -30,7 +31,7 @@ flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
-
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

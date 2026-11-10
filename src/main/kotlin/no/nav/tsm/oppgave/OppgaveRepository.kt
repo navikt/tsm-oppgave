@@ -11,13 +11,13 @@ import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.core.model.TsmOppgaveType
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.upsertReturning
 
 class OppgaveRepository {
 
     suspend fun insert(oppgave: Oppgave) = dbQuery {
-        OpprettOppgaveTable.insert {
+        OpprettOppgaveTable.upsertReturning {
             it[id] = UUID.randomUUID()
             it[personident] =
                 when (oppgave) {
@@ -66,12 +66,18 @@ class OppgaveRepository {
             it[oppgave_opprettet] = null
             it[oppgave_id] = null
             it[tsm_oppgavetype] = oppgave.type.toString()
-        }
+        }.single().toOppgave()
     }
 
     suspend fun listByIdent(ident: String): List<Oppgave> = dbQuery {
         OpprettOppgaveTable.selectAll()
             .where { OpprettOppgaveTable.personident eq ident }
+            .map { it.toOppgave() }
+    }
+
+    suspend fun listBySykmeldingId(sykmeldingId: String): List<Oppgave> = dbQuery {
+        OpprettOppgaveTable.selectAll()
+            .where { OpprettOppgaveTable.sykmeldingId eq sykmeldingId }
             .map { it.toOppgave() }
     }
 

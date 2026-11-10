@@ -58,6 +58,7 @@ dependencies {
     testImplementation(ktorLibs.server.testHost)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotest.assertions)
+    testImplementation(libs.mockk)
 }
 
 tasks {
