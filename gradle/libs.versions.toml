@@ -2,9 +2,9 @@
 jvmVersion = "25"
 
 kotlin = "2.4.21"
-logback = "1.6.5"
-arrow = "2.2.3"
-flyway = "13.11.1"
+logback = "1.6.6"
+arrow = "2.3.0.1"
+flyway = "13.12.1"
 postgres = "42.7.14"
 
 
@@ -13,7 +13,7 @@ kotest-assertions = "6.2.6"
 mockk = "1.14.11"
 
 detekt = "2.0.0-alpha.6"
-spotless = "8.10.4"
+spotless = "8.11.0"
 ktfmt = "0.62"
 
 
