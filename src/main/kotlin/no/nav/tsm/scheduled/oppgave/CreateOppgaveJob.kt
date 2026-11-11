@@ -32,23 +32,34 @@ class CreateOppgaveJob(
             }
         }
 
-    @WithSpan(inheritContext = false) private suspend fun handleOppgaveBatch() {
+    @WithSpan(inheritContext = false)
+    private suspend fun handleOppgaveBatch() {
         val span = Span.current()
 
-        // TODO reset hanging jobs
-
         var count = 0
-        do {
+        /* do {
             val (next, didProduce) = createNextOppgave()
             if (next != null && didProduce) count++
-        } while (next != null)
+        } while (next != null)*/
 
         if (count > 0) logger.info("Finished create oppgaver batch, created $count oppgaver")
 
         span.setAttribute("create-oppgave-job.oppgaver-created", count.toString())
     }
 
-    private fun createNextOppgave(): Pair<CreateOppgave, Boolean> {
-        TODO("Not yet implemented")
-    }
+    /*private fun createNextOppgave(): Pair<CreateOppgave, Boolean> {
+    TODO("Not yet implemented")
+    */
+    /*
+     * kalle saf
+     *
+     * opprette oppgave i oppgave-api
+     *
+     *
+     * lagre i db
+     *
+     *
+     * */
+    /*
+    }*/
 }

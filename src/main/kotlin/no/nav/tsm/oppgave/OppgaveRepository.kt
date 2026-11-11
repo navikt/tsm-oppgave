@@ -72,9 +72,7 @@ class OppgaveRepository {
     }
 
     suspend fun listByIdent(ident: String): List<Oppgave> = dbQuery {
-        OppgaveTable.selectAll()
-            .where { OppgaveTable.personident eq ident }
-            .map { it.toOppgave() }
+        OppgaveTable.selectAll().where { OppgaveTable.personident eq ident }.map { it.toOppgave() }
     }
 
     suspend fun listBySykmeldingId(sykmeldingId: String): List<Oppgave> = dbQuery {
@@ -90,8 +88,7 @@ class OppgaveRepository {
         val beskrivelse = this[OppgaveTable.beskrivelse]
         val oppgaveId = this[OppgaveTable.oppgave_id]?.toString()
         val aktivDato = this[OppgaveTable.aktiv_dato].toJavaLocalDate()
-        val fristFerdigstillelse =
-            this[OppgaveTable.frist_ferdigstillelse]?.toJavaLocalDate()
+        val fristFerdigstillelse = this[OppgaveTable.frist_ferdigstillelse]?.toJavaLocalDate()
         val journalpostId = this[OppgaveTable.journalpost_id]
         return when (type) {
             TsmOppgaveType.UTENLANDSK ->

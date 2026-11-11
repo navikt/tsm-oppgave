@@ -1,15 +1,18 @@
 package no.nav.tsm.scheduled.core
 
 import io.ktor.server.plugins.di.annotations.*
+import io.ktor.utils.io.CancellationException
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.time.OffsetDateTime
-import javax.print.attribute.standard.JobName
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.scheduled.core.db.JobRepository
+import no.nav.tsm.scheduled.core.jobs.AbstractJob
 import no.nav.tsm.scheduled.core.jobs.JobStatus
 
 enum class JobName {
@@ -38,7 +41,7 @@ enum class JobUpdateAction {
 data class JobUpdatePayload(val state: JobUpdateAction)
 
 class JobSchedulerService(
-    private val jobs: List<Job>, // TODO remove?
+    private val jobs: List<AbstractJob>,
     private val jobRepository: JobRepository,
     @Named("runner") private val runner: String,
 ) {
@@ -47,19 +50,19 @@ class JobSchedulerService(
 
     suspend fun setup() {
         logger.debug("Setting up JobScheduler")
-        /*jobs.forEach {
+        jobs.forEach {
             jobRepository.updateJobStatus(
                 runner = runner,
                 jobName = it.jobName,
                 jobStatus = it.status.value,
             )
-        }*/
+        }
     }
 
     suspend fun start() = coroutineScope {
         jobs.forEach { job ->
             launch {
-                /*job.status.collect { newStatus ->
+                job.status.collect { newStatus ->
                     logger.debug("Job(${job.jobName}) status changed to $newStatus")
                     try {
                         jobRepository.updateJobStatus(
@@ -75,12 +78,12 @@ class JobSchedulerService(
                             e,
                         )
                     }
-                }*/
+                }
             }
         }
 
-    /*jobRepository.deleteOldJobsRunners().onEach {
-            logger.info("Old job runner: ${it.runner } deleted")
+        jobRepository.deleteOldJobsRunners().onEach {
+            logger.info("Old job runner: ${it.runner} deleted")
         }
 
         while (isActive) {
@@ -97,28 +100,27 @@ class JobSchedulerService(
             }
             delay(updateInterval)
         }
-*/ }
+    }
 
     private suspend fun updateJobStatusTimestamps() {
-        // jobRepository.updateJobStatusTimestamp(runner)
+        jobRepository.updateJobStatusTimestamp(runner)
     }
 
     @WithSpan(inheritContext = false)
     suspend fun stop() {
         val span = Span.current()
-        // jobs.forEach { jobManager -> jobManager.stop() }
-        /*val deleted =
-        obRepository.deleteRunner(runner).onEach {
-            logger.info("Job runner: ${it.runner } deleted")
-        }*/
-
-        // span.setAttribute("jobStatus.deleted.counter", deleted.size.toLong())
+        jobs.forEach { jobManager -> jobManager.stop() }
+        val deleted =
+            jobRepository.deleteRunner(runner).onEach {
+                logger.info("Job runner: ${it.runner} deleted")
+            }
+        span.setAttribute("jobStatus.deleted.counter", deleted.size.toLong())
     }
 
     /** Don't @WithSpan this, as it causes every single span in all jobs to be nested under this. */
     private suspend fun updateJobs() {
         logger.debug("Updating jobs statuses")
-        /*val jobStates = jobRepository.getJobs().associate { it.jobName to it.desiredState }
+        val jobStates = jobRepository.getJobs().associate { it.jobName to it.desiredState }
 
         val span = Span.current()
         span.setAttribute("job.count", jobStates.size.toLong())
@@ -135,6 +137,6 @@ class JobSchedulerService(
                         logger.warn("Unknown desired state $desiredState for job ${job.jobName}")
                 }
             }
-        }*/
+        }
     }
 }
