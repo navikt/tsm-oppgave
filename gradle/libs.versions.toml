@@ -6,6 +6,7 @@ logback = "1.6.5"
 arrow = "2.2.3"
 flyway = "13.11.1"
 postgres = "42.7.14"
+postgresR2dbc = "1.1.2.RELEASE"
 
 
 testcontainers = "2.0.5"
@@ -24,6 +25,7 @@ arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref 
 
 # Database
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+postgresql-r2dbc = { module = "org.postgresql:r2dbc-postgresql", version.ref = "postgresR2dbc" }
 flyway-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 

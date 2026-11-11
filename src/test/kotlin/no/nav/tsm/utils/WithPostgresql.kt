@@ -1,7 +1,7 @@
 package no.nav.tsm.utils
 
 import org.flywaydb.core.Flyway
-import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
 import org.testcontainers.postgresql.PostgreSQLContainer
 
 abstract class WithPostgresql protected constructor() {
@@ -28,7 +28,7 @@ abstract class WithPostgresql protected constructor() {
         }
 
         fun connect() {
-            Database.connect(
+            R2dbcDatabase.connect(
                 url = config.postgres.jdbc,
                 user = config.postgres.username,
                 password = config.postgres.password,

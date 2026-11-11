@@ -45,8 +45,9 @@ dependencies {
     implementation(libs.flyway.postgres)
     implementation(libs.flyway.core)
     implementation(libs.postgresql)
+    implementation(libs.postgresql.r2dbc)
     implementation(exposedLibs.core)
-    implementation(exposedLibs.jdbc)
+    implementation(exposedLibs.r2dbc)
     implementation(exposedLibs.json)
     implementation(exposedLibs.kotlin.datetime)
 

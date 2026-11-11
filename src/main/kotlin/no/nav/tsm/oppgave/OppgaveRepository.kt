@@ -2,6 +2,9 @@ package no.nav.tsm.oppgave
 
 import java.time.LocalDateTime
 import java.util.UUID
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toKotlinLocalDateTime
@@ -11,8 +14,8 @@ import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.core.model.TsmOppgaveType
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.insertReturning
-import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.r2dbc.insertReturning
+import org.jetbrains.exposed.v1.r2dbc.selectAll
 
 class OppgaveRepository {
 
@@ -72,13 +75,17 @@ class OppgaveRepository {
     }
 
     suspend fun listByIdent(ident: String): List<Oppgave> = dbQuery {
-        OppgaveTable.selectAll().where { OppgaveTable.personident eq ident }.map { it.toOppgave() }
+        OppgaveTable.selectAll()
+            .where { OppgaveTable.personident eq ident }
+            .map { it.toOppgave() }
+            .toList()
     }
 
     suspend fun listBySykmeldingId(sykmeldingId: String): List<Oppgave> = dbQuery {
         OppgaveTable.selectAll()
             .where { OppgaveTable.sykmeldingId eq sykmeldingId }
             .map { it.toOppgave() }
+            .toList()
     }
 
     fun ResultRow.toOppgave(): Oppgave {

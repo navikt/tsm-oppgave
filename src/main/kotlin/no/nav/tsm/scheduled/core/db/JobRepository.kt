@@ -6,6 +6,8 @@ import java.time.ZoneOffset
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaInstant
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import no.nav.tsm.core.db.dbQuery
 import no.nav.tsm.scheduled.core.Job
 import no.nav.tsm.scheduled.core.JobName
@@ -14,10 +16,10 @@ import no.nav.tsm.scheduled.core.jobs.JobStatus
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.less
-import org.jetbrains.exposed.v1.jdbc.deleteReturning
-import org.jetbrains.exposed.v1.jdbc.selectAll
-import org.jetbrains.exposed.v1.jdbc.update
-import org.jetbrains.exposed.v1.jdbc.upsert
+import org.jetbrains.exposed.v1.r2dbc.deleteReturning
+import org.jetbrains.exposed.v1.r2dbc.selectAll
+import org.jetbrains.exposed.v1.r2dbc.update
+import org.jetbrains.exposed.v1.r2dbc.upsert
 
 class JobRepository {
 
