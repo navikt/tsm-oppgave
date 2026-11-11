@@ -7,6 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.di.*
 import no.nav.tsm.core.Environment
 import no.nav.tsm.core.initializeEnvironment
+import no.nav.tsm.scheduled.oppgave.CreateOppgaveJob
 
 fun Application.configureDependencies() {
     val config = environment.config
@@ -17,6 +18,7 @@ fun Application.configureDependencies() {
             createExternalApiHttpClient(resolve<HttpClient>())
         }
         provide<Environment> { initializeEnvironment(config) }
+        provide(CreateOppgaveJob::class)
     }
 }
 

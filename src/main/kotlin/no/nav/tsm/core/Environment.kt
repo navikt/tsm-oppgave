@@ -7,7 +7,7 @@ import no.nav.tsm.ktor.logger
 import no.nav.tsm.ktor.nais.RuntimeCluster
 import no.nav.tsm.ktor.nais.getRuntimeCluster
 
-class RuntimeConfig(val cluster: RuntimeCluster)
+class RuntimeConfig(val cluster: RuntimeCluster, val name: String)
 
 class PostgresConfig(val jdbc: String, val username: String, val password: String)
 
@@ -28,13 +28,17 @@ class Environment(
 
 fun initializeEnvironment(config: ApplicationConfig): Environment {
     return Environment(
-        runtime = RuntimeConfig(cluster = getRuntimeCluster()),
+        runtime =
+            RuntimeConfig(
+                name = config.property("app.name").getString(),
+                cluster = getRuntimeCluster(),
+            ),
         jobs =
             JobsConfig(
                 oppgaveCreator =
                     ProducerJob(
-                        delay = config.property("jobs.oppgaveCreator.delay").getAs(),
-                        hungTimeout = config.property("jobs.oppgaveCreator.hungTimeout").getAs(),
+                        delay = config.property("app.jobs.oppgaveCreator.delay").getAs(),
+                        hungTimeout = config.property("app.jobs.oppgaveCreator.hungTimeout").getAs(),
                     )
             ),
         postgres =

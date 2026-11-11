@@ -9,6 +9,7 @@ import no.nav.tsm.plugins.configureDependencies
 import no.nav.tsm.plugins.configureMonitoring
 import no.nav.tsm.plugins.configureSerialization
 import no.nav.tsm.saf.configureSafModule
+import no.nav.tsm.scheduled.configureJobsModule
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
@@ -25,4 +26,5 @@ fun Application.module() {
     configureOppgaveModule()
     configureSafModule()
     configureOppgaveApi()
+    configureJobsModule()
 }

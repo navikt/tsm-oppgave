@@ -1,4 +1,4 @@
-package no.nav.tsm.scheduled.jobs
+package no.nav.tsm.scheduled.core.jobs
 
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.*
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.scheduled.JobName
+import no.nav.tsm.scheduled.core.JobName
 
 enum class JobStatus {
     NOT_STARTED,

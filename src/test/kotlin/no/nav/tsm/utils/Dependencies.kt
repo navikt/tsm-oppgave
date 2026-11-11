@@ -7,7 +7,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer
 
 fun createIntegrationEnvironment(postgres: PostgreSQLContainer) =
     Environment(
-        runtime = RuntimeConfig(cluster = RuntimeCluster.LOCAL),
+        runtime = RuntimeConfig(cluster = RuntimeCluster.LOCAL, name = "tsm-oppgave-12344"),
         jobs = mockk(relaxed = true),
         postgres =
             PostgresConfig(

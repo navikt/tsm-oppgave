@@ -1,4 +1,4 @@
-CREATE TABLE opprett_oppgave
+CREATE TABLE oppgave
 (
     id                       UUID PRIMARY KEY,
     personident              TEXT,
@@ -10,6 +10,7 @@ CREATE TABLE opprett_oppgave
     oppgavetype              TEXT        NOT NULL,
     behandlingstype          TEXT,
     aktiv_dato               DATE        NOT NULL,
+    status                   TEXT,
     frist_ferdigstillelse    DATE,
     prioritet                TEXT        NOT NULL,
     sykmelding_id            TEXT,
@@ -18,3 +19,25 @@ CREATE TABLE opprett_oppgave
     oppgave_id               UUID,
     tsm_oppgavetype          TEXT
 );
+
+-- Jobs and related state
+CREATE TABLE job
+(
+    name          TEXT PRIMARY KEY,
+    desired_state TEXT        NOT NULL,
+    updated_at    TIMESTAMPTZ NOT NULL,
+    updated_by    TEXT        NOT NULL
+);
+
+CREATE TABLE job_status
+(
+    runner     TEXT        NOT NULL,
+    job        TEXT        NOT NULL,
+    state      TEXT        NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY (runner, job)
+);
+
+-- Initial state for jobs
+insert into job(name, desired_state, updated_at, updated_by)
+values ('CREATE_OPPGAVE', 'RUNNING', now(), 'system');
