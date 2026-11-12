@@ -4,6 +4,13 @@ import no.nav.tsm.core.db.OppgaveTable
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.timestampWithTimeZone
 
+enum class CreateOppgaveStatus {
+    PENDING,
+    PROCESSING,
+    COMPLETED,
+    FAILED,
+}
+
 object CreateOppgaveTable : Table("create_oppgave") {
     val id = reference("id", OppgaveTable.id)
     val status = text("status")
