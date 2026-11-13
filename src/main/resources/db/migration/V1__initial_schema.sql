@@ -20,6 +20,15 @@ CREATE TABLE oppgave
     tsm_oppgavetype          TEXT
 );
 
+CREATE TABLE create_oppgave
+(
+    id                  UUID REFERENCES oppgave (id),
+    status               TEXT        NOT NULL,
+    created_timestamp   TIMESTAMPTZ NOT NULL,
+    event_timestamp     TIMESTAMPTZ NOT NULL,
+    completed_timestamp TIMESTAMPTZ
+);
+
 -- Jobs and related state
 CREATE TABLE job
 (

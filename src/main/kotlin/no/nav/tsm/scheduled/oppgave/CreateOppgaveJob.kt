@@ -2,6 +2,9 @@ package no.nav.tsm.scheduled.oppgave
 
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
+import java.time.OffsetDateTime
+import java.time.ZoneOffset.UTC
+import kotlin.time.toJavaDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -12,9 +15,11 @@ import no.nav.tsm.ktor.logger
 import no.nav.tsm.oppgave.OppgaveService
 import no.nav.tsm.scheduled.core.JobName
 import no.nav.tsm.scheduled.core.jobs.AbstractJob
+import no.nav.tsm.scheduled.oppgave.db.CreateOppgaveRepository
 
 class CreateOppgaveJob(
     private val oppgaveService: OppgaveService,
+    private val createOppgaveRepository: CreateOppgaveRepository,
     applicationScope: CoroutineScope,
     environment: Environment,
 ) : AbstractJob(JobName.CREATE_OPPGAVE, applicationScope) {
@@ -35,6 +40,10 @@ class CreateOppgaveJob(
     @WithSpan(inheritContext = false)
     private suspend fun handleOppgaveBatch() {
         val span = Span.current()
+
+        createOppgaveRepository
+            .resetHangingJobs(OffsetDateTime.now(UTC).minus(hungOppgave.toJavaDuration()))
+            .let {}
 
         var count = 0
         /* do {

@@ -8,6 +8,7 @@ import kotlin.test.DefaultAsserter.fail
 import kotlinx.coroutines.test.runTest
 import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.oppgave.client.OppgaveClient
+import no.nav.tsm.scheduled.oppgave.db.CreateOppgaveRepository
 import no.nav.tsm.utils.WithPostgresql
 import org.junit.Test
 
@@ -19,16 +20,21 @@ class OppgaveServiceTest : WithPostgresql() {
 
     val oppgaveClient = mockk<OppgaveClient>()
     val oppgaveRepository = OppgaveRepository()
-    val oppgaveService = OppgaveService(oppgaveClient, oppgaveRepository)
+    val createOppgaveRepository = CreateOppgaveRepository()
+    val oppgaveService = OppgaveService(oppgaveClient, oppgaveRepository, createOppgaveRepository)
 
     @Test
     fun `should save BEHANDLINGSDAGER oppgave`() = runTest {
-        val oppgave = oppgaveService.opprettOppgave(behandlingsdagerOppgave)
-        oppgave.fold(
+        val oppgaveId = oppgaveService.opprettOppgave(behandlingsdagerOppgave)
+        oppgaveId.fold(
             ifLeft = { error: OppgaveServiceErrors ->
                 fail("oppgave should be saved and not return any errors. Got $error")
             },
-            ifRight = { oppgave -> oppgave shouldBe behandlingsdagerOppgave },
+            ifRight = {
+                oppgaveRepository
+                    .listBySykmeldingId(behandlingsdagerOppgave.sykmeldingId)
+                    .single() shouldBe behandlingsdagerOppgave
+            },
         )
     }
 

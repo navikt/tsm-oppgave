@@ -16,5 +16,5 @@ object CreateOppgaveTable : Table("create_oppgave") {
     val status = text("status")
     val createdTimestamp = timestampWithTimeZone("created_timestamp")
     val eventTimestamp = timestampWithTimeZone("event_timestamp")
-    val completedTimestamp = timestampWithTimeZone("completed_timestamp")
+    val completedTimestamp = timestampWithTimeZone("completed_timestamp").nullable()
 }
