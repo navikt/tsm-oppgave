@@ -4,7 +4,10 @@ import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.time.OffsetDateTime
 import java.time.ZoneOffset.UTC
+import java.util.UUID
+import kotlin.compareTo
 import kotlin.time.toJavaDuration
+import kotlin.toString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -43,32 +46,54 @@ class CreateOppgaveJob(
 
         createOppgaveRepository
             .resetHangingJobs(OffsetDateTime.now(UTC).minus(hungOppgave.toJavaDuration()))
-            .let {}
+            .let {
+                if (it > 0) {
+                    span.setAttribute("create-oppgave-job.jobs-reset", it.toString())
+                    logger.warn("Found $it jobs for oppgave that needed to be reset")
+                }
+            }
 
         var count = 0
-        /* do {
-            val (next, didProduce) = createNextOppgave()
-            if (next != null && didProduce) count++
-        } while (next != null)*/
+        do {
+            val (next, didCreate) = createNextOppgave()
+            if (next != null && didCreate) count++
+        } while (next != null)
 
         if (count > 0) logger.info("Finished create oppgaver batch, created $count oppgaver")
 
         span.setAttribute("create-oppgave-job.oppgaver-created", count.toString())
     }
 
-    /*private fun createNextOppgave(): Pair<CreateOppgave, Boolean> {
-    TODO("Not yet implemented")
-    */
-    /*
-     * kalle saf
-     *
-     * opprette oppgave i oppgave-api
-     *
-     *
-     * lagre i db
-     *
-     *
-     * */
-    /*
-    }*/
+    @WithSpan
+    private suspend fun createNextOppgave(): Pair<UUID?, Boolean> {
+        val next = createOppgaveRepository.getNext() ?: return null to false
+
+        try {
+            val oppgave =
+                requireNotNull(oppgaveService.getOppgave(next)) {
+                    "Oppgave with id $next not found in db"
+                }
+
+            // TODO: duplikatsjekk mot oppgaveapi
+
+            /*
+
+
+            * sjekke om oppgaven allerede er opprettet i oppgave api
+            *
+            * sjekk at journalpostId er null
+            * - hente journalpostid fra saf
+            *
+            * opprette mot oppgave api
+            *
+            * oppdatere oppgavetabell
+            *
+            * oppdatere createOppgaveTable
+            *
+            * */
+            return next to true
+        } catch (e: Exception) {
+            return next to false
+        }
+    }
 }

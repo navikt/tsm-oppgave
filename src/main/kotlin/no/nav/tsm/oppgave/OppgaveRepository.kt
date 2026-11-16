@@ -77,6 +77,10 @@ class OppgaveRepository {
         OppgaveTable.selectAll().where { OppgaveTable.personident eq ident }.map { it.toOppgave() }
     }
 
+    suspend fun byId(id: UUID): Oppgave? = dbQuery {
+        OppgaveTable.selectAll().where { OppgaveTable.id eq id }.firstOrNull()?.toOppgave()
+    }
+
     suspend fun listBySykmeldingId(sykmeldingId: String): List<Oppgave> = dbQuery {
         OppgaveTable.selectAll()
             .where { OppgaveTable.sykmeldingId eq sykmeldingId }

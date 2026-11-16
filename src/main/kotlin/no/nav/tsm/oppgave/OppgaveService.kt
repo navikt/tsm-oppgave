@@ -33,6 +33,11 @@ class OppgaveService(
     }
 
     @WithSpan
+    suspend fun getOppgave(id: UUID): Oppgave? {
+        return oppgaveRepository.byId(id)
+    }
+
+    @WithSpan
     suspend fun opprettOppgave(oppgave: Oppgave): Either<OppgaveServiceErrors, UUID> {
         if (oppgave.type != TsmOppgaveType.BEHANDLINGSDAGER) {
             return OppgaveServiceErrors.NotSupported.left()
