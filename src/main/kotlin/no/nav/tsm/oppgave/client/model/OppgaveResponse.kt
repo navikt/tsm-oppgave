@@ -1,6 +1,7 @@
 package no.nav.tsm.oppgave.client.model
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class OppgaveResponse(
     val id: Int,
@@ -21,4 +22,5 @@ data class OppgaveResponse(
     val prioritet: String,
     val status: String? = null,
     val mappeId: Int? = null,
+    val opprettetTidspunkt: LocalDateTime? = null,
 )

@@ -25,7 +25,7 @@ class OppgaveServiceTest : WithPostgresql() {
 
     @Test
     fun `should save BEHANDLINGSDAGER oppgave`() = runTest {
-        val oppgaveId = oppgaveService.opprettOppgave(behandlingsdagerOppgave)
+        val oppgaveId = oppgaveService.storeOppgave(behandlingsdagerOppgave)
         oppgaveId.fold(
             ifLeft = { error: OppgaveServiceErrors ->
                 fail("oppgave should be saved and not return any errors. Got $error")
@@ -40,7 +40,7 @@ class OppgaveServiceTest : WithPostgresql() {
 
     @Test
     fun `unsupported Oppgave types should not be saved`() = runTest {
-        val oppgave = oppgaveService.opprettOppgave(utenlandskOppgave)
+        val oppgave = oppgaveService.storeOppgave(utenlandskOppgave)
         oppgave.fold(
             ifLeft = { error: OppgaveServiceErrors ->
                 error shouldBe OppgaveServiceErrors.NotSupported

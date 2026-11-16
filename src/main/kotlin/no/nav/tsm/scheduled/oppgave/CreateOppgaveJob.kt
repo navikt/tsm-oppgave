@@ -5,24 +5,27 @@ import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.time.OffsetDateTime
 import java.time.ZoneOffset.UTC
 import java.util.UUID
-import kotlin.compareTo
 import kotlin.time.toJavaDuration
-import kotlin.toString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import no.nav.tsm.core.Environment
+import no.nav.tsm.core.model.Oppgave
+import no.nav.tsm.core.model.TsmOppgaveType
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.oppgave.OppgaveService
+import no.nav.tsm.saf.client.SafClient
 import no.nav.tsm.scheduled.core.JobName
 import no.nav.tsm.scheduled.core.jobs.AbstractJob
 import no.nav.tsm.scheduled.oppgave.db.CreateOppgaveRepository
+import no.nav.tsm.scheduled.oppgave.db.CreateOppgaveStatus
 
 class CreateOppgaveJob(
     private val oppgaveService: OppgaveService,
     private val createOppgaveRepository: CreateOppgaveRepository,
+    private val safClient: SafClient,
     applicationScope: CoroutineScope,
     environment: Environment,
 ) : AbstractJob(JobName.CREATE_OPPGAVE, applicationScope) {
@@ -68,32 +71,54 @@ class CreateOppgaveJob(
     private suspend fun createNextOppgave(): Pair<UUID?, Boolean> {
         val next = createOppgaveRepository.getNext() ?: return null to false
 
-        try {
-            val oppgave =
-                requireNotNull(oppgaveService.getOppgave(next)) {
-                    "Oppgave with id $next not found in db"
-                }
-
-            // TODO: duplikatsjekk mot oppgaveapi
-
-            /*
-
-
-            * sjekke om oppgaven allerede er opprettet i oppgave api
-            *
-            * sjekk at journalpostId er null
-            * - hente journalpostid fra saf
-            *
-            * opprette mot oppgave api
-            *
-            * oppdatere oppgavetabell
-            *
-            * oppdatere createOppgaveTable
-            *
-            * */
-            return next to true
-        } catch (e: Exception) {
+        val oppgave = oppgaveService.getOppgave(next).getOrNull()
+        if (oppgave == null) {
+            logger.warn("Fant ikke oppgave for id $next")
+            createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.FAILED)
             return next to false
         }
+
+        // TODO: duplikatsjekk mot oppgaveapi
+        // Sjekk på sykmeldingsId i fremtiden?
+
+        if (oppgave.type != TsmOppgaveType.BEHANDLINGSDAGER) {
+            logger.info("Oppgave with id $next is not of type ${TsmOppgaveType.BEHANDLINGSDAGER}")
+            createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.NOT_PROCESSABLE)
+            return next to false
+        }
+
+        val behandlingsdagerOppgave = oppgave as Oppgave.Behandlingsdager
+
+        if (behandlingsdagerOppgave.journalpostId == null) {
+            val journalpostId = safClient.getJournalpost(behandlingsdagerOppgave.sykmeldingId)
+            journalpostId.fold(
+                ifLeft = { error ->
+                    logger.warn(
+                        "SafClient returned with $error when fetching journalpost for oppgave with id $next"
+                    )
+                    createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.FAILED)
+                    return next to false
+                },
+                ifRight = { data ->
+                    oppgaveService.updateJournalpostIdForOppgave(
+                        id = next,
+                        journalpostId = data.journalpostId,
+                    )
+                },
+            )
+        }
+
+        oppgaveService
+            .createOppgave(next)
+            .fold(
+                ifLeft = { error ->
+                    createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.FAILED)
+                    return next to false
+                },
+                ifRight = { data ->
+                    createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.COMPLETED)
+                    return next to true
+                },
+            )
     }
 }

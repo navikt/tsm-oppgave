@@ -20,7 +20,6 @@ import no.nav.tsm.ktor.logger
 import no.nav.tsm.oppgave.client.model.OppgaveClientErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
-import no.nav.tsm.oppgave.client.model.OpprettOppgaveResponse
 
 class OppgaveCloudClient(
     @Named("RetryHttpClient") httpClient: HttpClient,
@@ -85,10 +84,49 @@ class OppgaveCloudClient(
 
     @WithSpan
     override suspend fun createOppgave(
-        oppgave: OpprettOppgaveRequest
-    ): Either<OppgaveClientErrors, OpprettOppgaveResponse> {
+        oppgave: OpprettOppgaveRequest,
+        sykmeldingId: String,
+    ): Either<OppgaveClientErrors, OppgaveResponse> {
         val span = Span.current()
-        TODO()
+        val (accessToken) = this.getToken()
+
+        val response =
+            httpClient.post("${environment.external().oppgaveApi}/api/v1/oppgaver") {
+                header("Authorization", "Bearer $accessToken")
+                header("X-Correlation-ID", sykmeldingId)
+                contentType(ContentType.Application.Json)
+                setBody(oppgave)
+            }
+
+        logger.info("$sykmeldingId responded with status ${response.status}")
+
+        return when {
+            response.status.isSuccess() -> {
+                span.setAttribute("client.outcome", "ok")
+                response.body<OppgaveResponse>().right()
+            }
+
+            response.status == HttpStatusCode.Unauthorized -> {
+                span.setAttribute("client.outcome", "Unauthorized")
+                OppgaveClientErrors.Unauthorized.left()
+            }
+
+            response.status == HttpStatusCode.BadRequest -> {
+                span.setAttribute("client.outcome", "BadRequest")
+                OppgaveClientErrors.BadRequest.left()
+            }
+
+            response.status == HttpStatusCode.Forbidden -> {
+                span.setAttribute("client.outcome", "Forbidden")
+                OppgaveClientErrors.Forbidden.left()
+            }
+
+            else -> {
+                span.setAttribute("client.outcome", response.status.toString())
+                logger.error("oppgave-api responded with status ${response.status}")
+                OppgaveClientErrors.Unknown.left()
+            }
+        }
     }
 
     private suspend fun getToken() =

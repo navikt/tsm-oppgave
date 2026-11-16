@@ -13,7 +13,6 @@ data class OpprettOppgaveRequest(
     val behandlesAvApplikasjon: String,
     val aktivDato: LocalDate,
     val fristFerdigstillelse: LocalDate?,
-    val eksternReferanseId: String,
     val oppgaveType: String,
     val prioritet: String,
 ) {
@@ -63,7 +62,6 @@ fun Oppgave.toOpprettOppgaveRequest(): OpprettOppgaveRequest {
         behandlesAvApplikasjon = oppgaveFelles.behandlesAvApplikasjon.name,
         aktivDato = aktivDato,
         fristFerdigstillelse = fristFerdigstillelse,
-        eksternReferanseId = sykmeldingId,
         oppgaveType = oppgaveFelles.oppgaveType.name,
         prioritet = oppgaveFelles.prioritet.name,
     )

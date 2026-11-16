@@ -23,6 +23,6 @@ object OppgaveTable : Table("oppgave") {
     val frist_ferdigstillelse = date("frist_ferdigstillelse").nullable()
     val prioritet = text("prioritet")
     val sykmeldingId = text("sykmelding_id")
-    val oppgave_id = javaUUID("oppgave_id").nullable()
+    val oppgave_id = text("oppgave_id").nullable()
     val tsm_oppgavetype = text("tsm_oppgavetype")
 }

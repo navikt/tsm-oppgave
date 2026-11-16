@@ -13,6 +13,8 @@ import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insertReturning
 import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.update
+import org.jetbrains.exposed.v1.jdbc.updateReturning
 
 class OppgaveRepository {
 
@@ -71,6 +73,25 @@ class OppgaveRepository {
                 .firstOrNull()
                 ?.get(id)
         }
+    }
+
+    suspend fun updateJournalpostId(id: UUID, journalpostId: String) = dbQuery {
+        OppgaveTable.update(where = { OppgaveTable.id eq id }) {
+            it[journalpost_id] = journalpostId
+        }
+    }
+
+    suspend fun updateCreatedOppgave(
+        id: UUID,
+        oppgaveId: String,
+        opprettetTidspunkt: LocalDateTime,
+    ) = dbQuery {
+        OppgaveTable.updateReturning(where = { OppgaveTable.id eq id }) {
+                it[oppgave_id] = oppgaveId
+                it[oppgave_opprettet] = opprettetTidspunkt.toKotlinLocalDateTime()
+            }
+            .first()
+            .toOppgave()
     }
 
     suspend fun listByIdent(ident: String): List<Oppgave> = dbQuery {

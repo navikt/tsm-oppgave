@@ -18,7 +18,7 @@ fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
         val oppgaveRequest: OpprettOppgavePayload = call.receive()
         val oppgave = oppgaveRequest.toOppgave(TsmOppgaveType.valueOf(oppgaveRequest.type))
         oppgaveService
-            .opprettOppgave(oppgave)
+            .storeOppgave(oppgave)
             .fold(
                 ifLeft = { error ->
                     if (error == OppgaveServiceErrors.NotSupported) {

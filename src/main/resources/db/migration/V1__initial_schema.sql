@@ -16,7 +16,7 @@ CREATE TABLE oppgave
     sykmelding_id            TEXT,
     created                  TIMESTAMPTZ NOT NULL,
     oppgave_opprettet        TIMESTAMPTZ,
-    oppgave_id               UUID,
+    oppgave_id               TEXT,
     tsm_oppgavetype          TEXT
 );
 

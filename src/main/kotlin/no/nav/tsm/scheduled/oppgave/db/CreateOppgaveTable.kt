@@ -9,6 +9,7 @@ enum class CreateOppgaveStatus {
     PROCESSING,
     COMPLETED,
     FAILED,
+    NOT_PROCESSABLE,
 }
 
 object CreateOppgaveTable : Table("create_oppgave") {
