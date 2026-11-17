@@ -12,10 +12,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import no.nav.tsm.core.Environment
-import no.nav.tsm.core.model.Oppgave
-import no.nav.tsm.core.model.TsmOppgaveType
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.oppgave.OppgaveService
+import no.nav.tsm.oppgave.OppgaveServiceErrors
 import no.nav.tsm.saf.client.SafClient
 import no.nav.tsm.scheduled.core.JobName
 import no.nav.tsm.scheduled.core.jobs.AbstractJob
@@ -71,51 +70,23 @@ class CreateOppgaveJob(
     private suspend fun createNextOppgave(): Pair<UUID?, Boolean> {
         val next = createOppgaveRepository.getNext() ?: return null to false
 
-        val oppgave = oppgaveService.getOppgave(next).getOrNull()
-        if (oppgave == null) {
-            logger.warn("Fant ikke oppgave for id $next")
-            createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.FAILED)
-            return next to false
-        }
-
-        // TODO: duplikatsjekk mot oppgaveapi
-        // Sjekk på sykmeldingsId i fremtiden?
-
-        if (oppgave.type != TsmOppgaveType.BEHANDLINGSDAGER) {
-            logger.info("Oppgave with id $next is not of type ${TsmOppgaveType.BEHANDLINGSDAGER}")
-            createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.NOT_PROCESSABLE)
-            return next to false
-        }
-
-        val behandlingsdagerOppgave = oppgave as Oppgave.Behandlingsdager
-
-        if (behandlingsdagerOppgave.journalpostId == null) {
-            val journalpostId = safClient.getJournalpost(behandlingsdagerOppgave.sykmeldingId)
-            journalpostId.fold(
-                ifLeft = { error ->
-                    logger.warn(
-                        "SafClient returned with $error when fetching journalpost for oppgave with id $next"
-                    )
-                    createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.FAILED)
-                    return next to false
-                },
-                ifRight = { data ->
-                    oppgaveService.updateJournalpostIdForOppgave(
-                        id = next,
-                        journalpostId = data.journalpostId,
-                    )
-                },
-            )
-        }
+        // TODO: duplikatsjekk
 
         oppgaveService
-            .createOppgave(next)
+            .tryToCreateOppgave(next)
             .fold(
                 ifLeft = { error ->
-                    createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.FAILED)
+                    val status =
+                        when (error) {
+                            OppgaveServiceErrors.NotFound -> CreateOppgaveStatus.FAILED
+                            OppgaveServiceErrors.Error -> CreateOppgaveStatus.FAILED
+                            OppgaveServiceErrors.NotSupported -> CreateOppgaveStatus.NOT_PROCESSABLE
+                            else -> CreateOppgaveStatus.FAILED
+                        }
+                    createOppgaveRepository.updateStatus(next, status)
                     return next to false
                 },
-                ifRight = { data ->
+                ifRight = {
                     createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.COMPLETED)
                     return next to true
                 },

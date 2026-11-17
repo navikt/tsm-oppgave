@@ -53,6 +53,7 @@ class SafCloudClient(
 
         val body = response.body<GraphQLResponse>()
 
+        // TODO: add logging
         if (body.errors?.isNotEmpty() == true) {
             body.errors.forEach {
                 return when (it.extensions.code) {

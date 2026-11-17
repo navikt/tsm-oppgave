@@ -20,6 +20,7 @@ data class OpprettOppgaveRequest(
     val tema: String = "SYM"
 }
 
+// TODO: test denne
 fun Oppgave.toOpprettOppgaveRequest(): OpprettOppgaveRequest {
     return OpprettOppgaveRequest(
         personident =

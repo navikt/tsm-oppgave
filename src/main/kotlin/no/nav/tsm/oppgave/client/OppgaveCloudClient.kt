@@ -100,6 +100,7 @@ class OppgaveCloudClient(
 
         logger.info("$sykmeldingId responded with status ${response.status}")
 
+        // TODO: add more logging
         return when {
             response.status.isSuccess() -> {
                 span.setAttribute("client.outcome", "ok")

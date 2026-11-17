@@ -2,6 +2,8 @@ package no.nav.tsm.oppgave
 
 import arrow.core.Either
 import arrow.core.left
+import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import arrow.core.right
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import java.time.LocalDateTime
@@ -13,6 +15,7 @@ import no.nav.tsm.oppgave.client.OppgaveClient
 import no.nav.tsm.oppgave.client.model.OppgaveClientErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
 import no.nav.tsm.oppgave.client.model.toOpprettOppgaveRequest
+import no.nav.tsm.saf.client.SafClient
 import no.nav.tsm.scheduled.oppgave.db.CreateOppgaveRepository
 
 enum class OppgaveServiceErrors {
@@ -24,6 +27,7 @@ enum class OppgaveServiceErrors {
 
 class OppgaveService(
     private val oppgaveClient: OppgaveClient,
+    private val safClient: SafClient,
     private val oppgaveRepository: OppgaveRepository,
     private val createOppgaveRepository: CreateOppgaveRepository,
 ) {
@@ -46,41 +50,86 @@ class OppgaveService(
         if (oppgave.type != TsmOppgaveType.BEHANDLINGSDAGER) {
             return OppgaveServiceErrors.NotSupported.left()
         }
-        // TODO: denne må vi prate om, returnerer nå id istedenfor oppgave
         val createdOppgave =
             oppgaveRepository.insert(oppgave) ?: return OppgaveServiceErrors.Error.left()
         createOppgaveRepository.insert(createdOppgave)
         return createdOppgave.right()
     }
 
+    // createOppgave
+
+    /*
+    * kaller oppgaveRepoById
+
+    * */
+
+    // validateOppgave
+    // null sjekk osv... sjekker type osv...
+
+    // updateJournalpost
+
+    //
+
     @WithSpan
-    suspend fun createOppgave(id: UUID): Either<OppgaveServiceErrors, Oppgave> {
-        val oppgave = oppgaveRepository.byId(id) ?: return OppgaveServiceErrors.NotFound.left()
+    suspend fun tryToCreateOppgave(id: UUID): Either<OppgaveServiceErrors, Oppgave> {
+        val oppgave = oppgaveRepository.byId(id)
+        if (oppgave == null) {
+            logger.warn("Oppgave med id $id ikke funnet")
+            return OppgaveServiceErrors.NotFound.left()
+        }
 
-        // Assume everything is okay
-        val createdOppgave =
-            oppgaveClient.createOppgave(oppgave.toOpprettOppgaveRequest(), oppgave.sykmeldingId)
+        if (oppgave !is Oppgave.Behandlingsdager) {
+            logger.info("Oppgave med id $id er ikke av typen BEHANDLINGSDAGER")
+            return OppgaveServiceErrors.NotSupported.left()
+        }
 
-        createdOppgave.fold(
-            ifLeft = { error ->
-                return OppgaveServiceErrors.Error.left()
-            },
-            ifRight = { oppgaveResponse ->
-                if (oppgaveResponse.opprettetTidspunkt == null) {
-                    logger.warn(
-                        "Oppgave ${oppgaveResponse.id} er opprettet, men mangler opprettetTidspunkt. Bruker currentTime for opprettetTidspunkt"
-                    )
-                }
-                val oppgave =
-                    oppgaveRepository.updateCreatedOppgave(
-                        id,
-                        oppgaveResponse.id.toString(),
-                        oppgaveResponse.opprettetTidspunkt ?: LocalDateTime.now(),
-                    )
-                return oppgave.right()
-            },
-        )
+        if (oppgave.journalpostId == null) {
+            safClient
+                .getJournalpost(oppgave.sykmeldingId)
+                .fold(
+                    ifLeft = { error ->
+                        logger.warn("Kunne ikke hente journalpost for oppgave med id $id: $error")
+                        return OppgaveServiceErrors.Error.left()
+                    },
+                    ifRight = { journalpost ->
+                        updateJournalpostIdForOppgave(
+                            id = id,
+                            journalpostId = journalpost.journalpostId,
+                        )
+                    },
+                )
+        }
+        return createInOppgaveApiAndUpdate(id)
     }
+
+    @WithSpan
+    suspend fun createInOppgaveApiAndUpdate(id: UUID): Either<OppgaveServiceErrors, Oppgave> =
+        either {
+            val oppgave =
+                ensureNotNull(oppgaveRepository.byId(id)) { OppgaveServiceErrors.NotFound }
+
+            // TODO: add more errors from oppgaveClient
+            val oppgaveResponse =
+                oppgaveClient
+                    .createOppgave(
+                        oppgave = oppgave.toOpprettOppgaveRequest(),
+                        oppgave.sykmeldingId,
+                    )
+                    .mapLeft { OppgaveServiceErrors.Error }
+                    .bind()
+
+            if (oppgaveResponse.opprettetTidspunkt == null) {
+                logger.warn(
+                    "Oppgave ${oppgaveResponse.id} er opprettet, men mangler opprettetTidspunkt. Bruker currentTime for opprettetTidspunkt"
+                )
+            }
+
+            oppgaveRepository.updateCreatedOppgave(
+                id,
+                oppgaveResponse.id.toString(),
+                oppgaveResponse.opprettetTidspunkt ?: LocalDateTime.now(),
+            )
+        }
 
     @WithSpan
     suspend fun updateJournalpostIdForOppgave(id: UUID, journalpostId: String): Int {
