@@ -9,7 +9,6 @@ import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.DefaultAsserter.fail
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.LocalDateTime
 import no.nav.tsm.core.model.Oppgave
 import no.nav.tsm.core.model.TsmOppgaveType
 import no.nav.tsm.oppgave.client.OppgaveClient
@@ -84,7 +83,7 @@ class OppgaveServiceTest : WithPostgresql() {
                     .right()
             }
 
-        val oppgave = oppgaveService.tryToCreateOppgave(oppgaveId)
+        val oppgave = oppgaveService.createOppgave(oppgaveId)
         oppgave.fold(
             ifLeft = { error ->
                 fail("oppgave should be saved and not return any errors. Got $error")
@@ -100,7 +99,7 @@ class OppgaveServiceTest : WithPostgresql() {
     @Test
     fun `create oppgave that is not BEHANDLINGSDAGER oppgave`() = runTest {
         val oppgaveId = oppgaveRepository.insert(utenlandskOppgave)!!
-        val oppgave = oppgaveService.tryToCreateOppgave(oppgaveId)
+        val oppgave = oppgaveService.createOppgave(oppgaveId)
         oppgave.fold(
             ifLeft = { error ->
                 error shouldBe OppgaveServiceErrors.NotSupported
@@ -118,7 +117,7 @@ class OppgaveServiceTest : WithPostgresql() {
                 {
                     SafErrors.NOT_FOUND.left()
                 }
-        val oppgave = oppgaveService.tryToCreateOppgave(oppgaveId)
+        val oppgave = oppgaveService.createOppgave(oppgaveId)
         oppgave.fold(
             ifLeft = { error ->
                 error shouldBe OppgaveServiceErrors.Error
@@ -144,7 +143,7 @@ class OppgaveServiceTest : WithPostgresql() {
                 {
                     OppgaveClientErrors.Unknown.left()
                 }
-        val oppgave = oppgaveService.tryToCreateOppgave(oppgaveId)
+        val oppgave = oppgaveService.createOppgave(oppgaveId)
         oppgave.fold(
             ifLeft = { error ->
                 error shouldBe OppgaveServiceErrors.Error

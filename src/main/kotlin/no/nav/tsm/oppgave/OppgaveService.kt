@@ -71,7 +71,7 @@ class OppgaveService(
     //
 
     @WithSpan
-    suspend fun tryToCreateOppgave(id: UUID): Either<OppgaveServiceErrors, Oppgave> {
+    suspend fun createOppgave(id: UUID): Either<OppgaveServiceErrors, Oppgave> {
         val oppgave = oppgaveRepository.byId(id)
         if (oppgave == null) {
             logger.warn("Oppgave med id $id ikke funnet")

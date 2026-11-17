@@ -73,7 +73,7 @@ class CreateOppgaveJob(
         // TODO: duplikatsjekk
 
         oppgaveService
-            .tryToCreateOppgave(next)
+            .createOppgave(next)
             .fold(
                 ifLeft = { error ->
                     val status =
