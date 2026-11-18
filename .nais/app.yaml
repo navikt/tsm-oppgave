@@ -33,6 +33,7 @@ spec:
     inbound:
       rules:
         - application: zara
+        - application: tsm-behandlingsdager
     outbound:
       rules:
         - application: logging
