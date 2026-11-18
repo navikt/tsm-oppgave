@@ -1,6 +1,7 @@
 package no.nav.tsm
 
 import io.ktor.server.application.Application
+import no.nav.tsm.admin.configureAdminModule
 import no.nav.tsm.api.configureOppgaveApi
 import no.nav.tsm.oppgave.configureOppgaveModule
 import no.nav.tsm.plugins.configureAuthentication
@@ -27,4 +28,5 @@ fun Application.module() {
     configureSafModule()
     configureOppgaveApi()
     configureJobsModule()
+    configureAdminModule()
 }

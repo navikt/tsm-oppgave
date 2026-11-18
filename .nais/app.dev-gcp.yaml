@@ -13,6 +13,7 @@ spec:
     application:
       enabled: true
       tenant: trygdeetaten.no
+      # TODO: When going in prod, add entraAD group for nais-team-tsm
       allowAllUsers: true
   accessPolicy:
     outbound:
