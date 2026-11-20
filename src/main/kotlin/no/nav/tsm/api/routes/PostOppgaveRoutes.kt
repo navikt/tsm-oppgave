@@ -32,9 +32,7 @@ fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
                         call.respond(HttpStatusCode.InternalServerError)
                     }
                 },
-                ifRight = {
-                    call.respond(HttpStatusCode.Accepted)
-                },
+                ifRight = { call.respond(HttpStatusCode.Accepted) },
             )
     }
 }

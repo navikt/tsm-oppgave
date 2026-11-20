@@ -7,6 +7,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.serialization.jackson3.*
 import io.ktor.server.plugins.di.annotations.*
@@ -17,6 +18,7 @@ import no.nav.tsm.core.Environment
 import no.nav.tsm.core.toFssCluster
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.logger
+import no.nav.tsm.ktor.teamLogger
 import no.nav.tsm.oppgave.client.model.OppgaveClientErrors
 import no.nav.tsm.oppgave.client.model.OppgaveResponse
 import no.nav.tsm.oppgave.client.model.OpprettOppgaveRequest
@@ -27,6 +29,7 @@ class OppgaveCloudClient(
     private val environment: Environment,
 ) : OppgaveClient {
     private val logger = logger()
+    private val teamlogger = teamLogger()
 
     private val httpClient: HttpClient = httpClient.config {
         install(ContentNegotiation) { jackson {} }
@@ -99,6 +102,7 @@ class OppgaveCloudClient(
             }
 
         logger.info("$sykmeldingId responded with status ${response.status}")
+        teamlogger.info("$sykmeldingId responded with status ${response.status} and body: ${response.bodyAsText()}")
 
         // TODO: add more logging
         return when {

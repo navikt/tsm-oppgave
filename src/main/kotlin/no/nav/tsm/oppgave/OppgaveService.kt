@@ -93,7 +93,9 @@ class OppgaveService(
                         return OppgaveServiceErrors.Error.left()
                     },
                     ifRight = { journalpost ->
-                        logger.info("updating journalpost for oppgave with id $id and journalpostId: ${journalpost.journalpostId}")
+                        logger.info(
+                            "updating journalpost for oppgave with id $id and journalpostId: ${journalpost.journalpostId}"
+                        )
                         updateJournalpostIdForOppgave(
                             id = id,
                             journalpostId = journalpost.journalpostId,
