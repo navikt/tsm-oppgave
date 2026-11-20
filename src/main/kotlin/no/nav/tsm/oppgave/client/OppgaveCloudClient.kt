@@ -44,7 +44,7 @@ class OppgaveCloudClient(
         val xCorrelationId = UUID.randomUUID().toString()
 
         val response =
-            httpClient.get("${environment.external().oppgaveApi}/api/v1/oppgaver") {
+            httpClient.get("${environment.external().oppgaveApi.url}/api/v1/oppgaver") {
                 header("Authorization", "Bearer $accessToken")
                 header("X-Correlation-ID", xCorrelationId)
                 parameter("aktoerId", ident)
@@ -91,7 +91,7 @@ class OppgaveCloudClient(
         val (accessToken) = this.getToken()
 
         val response =
-            httpClient.post("${environment.external().oppgaveApi}/api/v1/oppgaver") {
+            httpClient.post("${environment.external().oppgaveApi.url}/api/v1/oppgaver") {
                 header("Authorization", "Bearer $accessToken")
                 header("X-Correlation-ID", sykmeldingId)
                 contentType(ContentType.Application.Json)

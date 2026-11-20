@@ -33,7 +33,6 @@ fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
                     }
                 },
                 ifRight = {
-                    logger.info("Opprett oppgave was successful")
                     call.respond(HttpStatusCode.Accepted)
                 },
             )
