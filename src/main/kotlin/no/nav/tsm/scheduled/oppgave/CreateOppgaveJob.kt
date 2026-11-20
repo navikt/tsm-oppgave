@@ -68,6 +68,7 @@ class CreateOppgaveJob(
 
     @WithSpan
     private suspend fun createNextOppgave(): Pair<UUID?, Boolean> {
+        logger.info("getting next oppgave to create in creatOppgaveJov")
         val next = createOppgaveRepository.getNext() ?: return null to false
 
         // TODO: duplikatsjekk

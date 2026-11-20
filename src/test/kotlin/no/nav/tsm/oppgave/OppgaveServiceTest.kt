@@ -101,12 +101,8 @@ class OppgaveServiceTest : WithPostgresql() {
         val oppgaveId = oppgaveRepository.insert(utenlandskOppgave)!!
         val oppgave = oppgaveService.createOppgave(oppgaveId)
         oppgave.fold(
-            ifLeft = { error ->
-                error shouldBe OppgaveServiceErrors.NotSupported
-            },
-            ifRight = { oppgave ->
-                fail("oppgave should not have been saved")
-            }
+            ifLeft = { error -> error shouldBe OppgaveServiceErrors.NotSupported },
+            ifRight = { oppgave -> fail("oppgave should not have been saved") },
         )
     }
 
@@ -114,47 +110,37 @@ class OppgaveServiceTest : WithPostgresql() {
     fun `create BEHANDLINGSDAGER oppgave when no journalpost exists should fail`() = runTest {
         val oppgaveId = oppgaveRepository.insert(behandlingsdagerOppgave)!!
         coEvery { safClient.getJournalpost(behandlingsdagerOppgave.sykmeldingId) } coAnswers
-                {
-                    SafErrors.NOT_FOUND.left()
-                }
+            {
+                SafErrors.NOT_FOUND.left()
+            }
         val oppgave = oppgaveService.createOppgave(oppgaveId)
         oppgave.fold(
-            ifLeft = { error ->
-                error shouldBe OppgaveServiceErrors.Error
-            },
-            ifRight = { oppgave ->
-                fail("oppgave should not have been saved")
-            }
+            ifLeft = { error -> error shouldBe OppgaveServiceErrors.Error },
+            ifRight = { oppgave -> fail("oppgave should not have been saved") },
         )
     }
 
     @Test
-    fun `create BEHANDLINGSDAGER oppgave with journalpostId should store in database even when oppgaveClient fails`() = runTest {
-        val journalpostId = "123456"
-        val oppgaveId = oppgaveRepository.insert(behandlingsdagerOppgave)!!
-        coEvery { safClient.getJournalpost(behandlingsdagerOppgave.sykmeldingId) } coAnswers
+    fun `create BEHANDLINGSDAGER oppgave with journalpostId should store in database even when oppgaveClient fails`() =
+        runTest {
+            val journalpostId = "123456"
+            val oppgaveId = oppgaveRepository.insert(behandlingsdagerOppgave)!!
+            coEvery { safClient.getJournalpost(behandlingsdagerOppgave.sykmeldingId) } coAnswers
                 {
                     Journalpost(journalpostId).right()
                 }
 
-        coEvery {
-            oppgaveClient.createOppgave(any(), behandlingsdagerOppgave.sykmeldingId)
-        } coAnswers
-                {
-                    OppgaveClientErrors.Unknown.left()
-                }
-        val oppgave = oppgaveService.createOppgave(oppgaveId)
-        oppgave.fold(
-            ifLeft = { error ->
-                error shouldBe OppgaveServiceErrors.Error
-            },
-            ifRight = { oppgave ->
-                fail("oppgave should not have been saved")
-            }
-        )
-        val persistedOppgave = oppgaveRepository.byId(oppgaveId) as Oppgave.Behandlingsdager
-        persistedOppgave.journalpostId shouldBe journalpostId
-    }
+            coEvery {
+                oppgaveClient.createOppgave(any(), behandlingsdagerOppgave.sykmeldingId)
+            } coAnswers { OppgaveClientErrors.Unknown.left() }
+            val oppgave = oppgaveService.createOppgave(oppgaveId)
+            oppgave.fold(
+                ifLeft = { error -> error shouldBe OppgaveServiceErrors.Error },
+                ifRight = { oppgave -> fail("oppgave should not have been saved") },
+            )
+            val persistedOppgave = oppgaveRepository.byId(oppgaveId) as Oppgave.Behandlingsdager
+            persistedOppgave.journalpostId shouldBe journalpostId
+        }
 }
 
 val IDENT = "11111111111"

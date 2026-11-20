@@ -9,13 +9,13 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import java.time.OffsetDateTime
 import no.nav.tsm.ktor.auth.entra.entraOnBehalfOf
 import no.nav.tsm.ktor.auth.entra.obo.onBehalfOfUser
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.scheduled.core.JobName
 import no.nav.tsm.scheduled.core.db.JobRepository
 import no.nav.tsm.scheduled.core.jobs.JobStatus
-import java.time.OffsetDateTime
 
 data class JobRunners(val runner: String, val state: JobStatus, val updatedAt: OffsetDateTime)
 
@@ -49,20 +49,22 @@ fun Application.configureJobAdminRoutes() {
                             name = job.jobName,
                             desiredState = job.desiredState,
                             updatedAt = job.updatedAt,
-                            runners = jobStatuses.map { runner ->
-                                JobRunners(
-                                    runner = runner.runner,
-                                    state = runner.state,
-                                    updatedAt = runner.updatedAt,
-                                )
-                            }
+                            runners =
+                                jobStatuses.map { runner ->
+                                    JobRunners(
+                                        runner = runner.runner,
+                                        state = runner.state,
+                                        updatedAt = runner.updatedAt,
+                                    )
+                                },
                         )
                     }
                     call.respond(HttpStatusCode.OK, response)
                 }
                 post("{name}/status") {
-                    val name = call.parameters["name"]?.let { JobName.valueOf(it) }
-                        ?: return@post call.respond(HttpStatusCode.BadRequest)
+                    val name =
+                        call.parameters["name"]?.let { JobName.valueOf(it) }
+                            ?: return@post call.respond(HttpStatusCode.BadRequest)
                     val job = call.receive<JobUpdatePayload>()
                     val desiredState =
                         when (job.state) {

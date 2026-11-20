@@ -77,6 +77,7 @@ class OppgaveService(
             logger.warn("Oppgave med id $id ikke funnet")
             return OppgaveServiceErrors.NotFound.left()
         }
+        logger.info("found oppggave with sykmeldingId: ${oppgave.sykmeldingId}")
 
         if (oppgave !is Oppgave.Behandlingsdager) {
             logger.info("Oppgave med id $id er ikke av typen BEHANDLINGSDAGER")
@@ -92,6 +93,7 @@ class OppgaveService(
                         return OppgaveServiceErrors.Error.left()
                     },
                     ifRight = { journalpost ->
+                        logger.info("updating journalpost for oppgave with id $id and journalpostId: ${journalpost.journalpostId}")
                         updateJournalpostIdForOppgave(
                             id = id,
                             journalpostId = journalpost.journalpostId,
@@ -123,6 +125,8 @@ class OppgaveService(
                     "Oppgave ${oppgaveResponse.id} er opprettet, men mangler opprettetTidspunkt. Bruker currentTime for opprettetTidspunkt"
                 )
             }
+
+            logger.info("created oppgave ok for sykmeldingId: $id")
 
             oppgaveRepository.updateCreatedOppgave(
                 id,
