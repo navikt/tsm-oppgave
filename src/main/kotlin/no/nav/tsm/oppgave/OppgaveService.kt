@@ -133,7 +133,7 @@ class OppgaveService(
             oppgaveRepository.updateCreatedOppgave(
                 id,
                 oppgaveResponse.id.toString(),
-                oppgaveResponse.opprettetTidspunkt ?: LocalDateTime.now(),
+                oppgaveResponse.opprettetTidspunkt?.toLocalDateTime() ?: LocalDateTime.now(),
             )
         }
 

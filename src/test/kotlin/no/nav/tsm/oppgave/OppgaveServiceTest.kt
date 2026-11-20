@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.util.UUID
 import kotlin.test.DefaultAsserter.fail
 import kotlinx.coroutines.test.runTest
@@ -78,7 +79,7 @@ class OppgaveServiceTest : WithPostgresql() {
                         oppgavetype = "SYM",
                         aktivDato = LocalDate.now(),
                         prioritet = "HOY",
-                        opprettetTidspunkt = java.time.LocalDateTime.now(),
+                        opprettetTidspunkt = OffsetDateTime.now(),
                     )
                     .right()
             }

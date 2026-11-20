@@ -102,7 +102,9 @@ class OppgaveCloudClient(
             }
 
         logger.info("$sykmeldingId responded with status ${response.status}")
-        teamlogger.info("$sykmeldingId responded with status ${response.status} and body: ${response.bodyAsText()}")
+        teamlogger.info(
+            "$sykmeldingId responded with status ${response.status} and body: ${response.bodyAsText()}"
+        )
 
         // TODO: add more logging
         return when {
