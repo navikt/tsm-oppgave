@@ -15,6 +15,7 @@ import no.nav.tsm.oppgave.OppgaveServiceErrors
 fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
     val logger = logger()
     post("/api/oppgave") {
+        logger.info("Routing POST /api/oppgave")
         val oppgaveRequest: OpprettOppgavePayload = call.receive()
         val oppgave = oppgaveRequest.toOppgave(TsmOppgaveType.valueOf(oppgaveRequest.type))
         oppgaveService
@@ -26,9 +27,10 @@ fun Route.postOppgaveRoutes(oppgaveService: OppgaveService) {
                             HttpStatusCode.BadRequest,
                             "Ikke mulig å opprette oppgave for type ${oppgaveRequest.type}. SykmeldingId: ${oppgaveRequest.sykmeldingId}",
                         )
+                    } else {
+                        logger.error("Something went really wrong, check logs")
+                        call.respond(HttpStatusCode.InternalServerError)
                     }
-                    logger.error("Something went really wrong, check logs")
-                    call.respond(HttpStatusCode.InternalServerError)
                 },
                 ifRight = {
                     logger.info("Opprett oppgave was successful")
