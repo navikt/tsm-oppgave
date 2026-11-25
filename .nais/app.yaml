@@ -7,14 +7,10 @@ metadata:
     team: tsm
 
 spec:
-  gcp:
-    sqlInstances:
-      - type: POSTGRES_17
-        tier: db-f1-micro
-        databases:
-          - name: tsm-oppgave
-            envVarPrefix: DB
   port: 8080
+  uses:
+    postgres:
+      - name: tsm-oppgave-postgres
   liveness:
     path: /internal/health/alive
   readiness:

@@ -15,7 +15,5 @@ fun Application.configureDatabase() {
 
     Database.connect(
         url = env.postgres.jdbc,
-        user = env.postgres.username,
-        password = env.postgres.password,
     )
 }

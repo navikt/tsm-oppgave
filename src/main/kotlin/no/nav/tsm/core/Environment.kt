@@ -9,7 +9,7 @@ import no.nav.tsm.ktor.nais.getRuntimeCluster
 
 class RuntimeConfig(val cluster: RuntimeCluster, val name: String)
 
-class PostgresConfig(val jdbc: String, val username: String, val password: String)
+class PostgresConfig(val jdbc: String)
 
 class ExternalApi(val oppgaveApi: ExternalApiConfig, val safApi: ExternalApiConfig)
 
@@ -44,8 +44,6 @@ fun initializeEnvironment(config: ApplicationConfig): Environment {
         postgres =
             PostgresConfig(
                 jdbc = config.property("postgres.jdbc").getString(),
-                username = config.property("postgres.username").getString(),
-                password = config.property("postgres.password").getString(),
             ),
         external = {
             ExternalApi(
