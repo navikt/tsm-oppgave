@@ -89,6 +89,7 @@ class CreateOppgaveJob(
                 },
                 ifRight = {
                     createOppgaveRepository.updateStatus(next, CreateOppgaveStatus.COMPLETED)
+                    createOppgaveRepository.setToCompleted(next)
                     return next to true
                 },
             )

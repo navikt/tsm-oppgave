@@ -51,6 +51,13 @@ class CreateOppgaveRepository {
     }
 
     @WithSpan
+    suspend fun setToCompleted(id: UUID) = dbQuery {
+        CreateOppgaveTable.update({ CreateOppgaveTable.id eq id }) {
+            it[completedTimestamp] = OffsetDateTime.now(ZoneOffset.UTC)
+        }
+    }
+
+    @WithSpan
     suspend fun insert(id: UUID) = dbQuery {
         CreateOppgaveTable.insert {
             it[CreateOppgaveTable.id] = id
