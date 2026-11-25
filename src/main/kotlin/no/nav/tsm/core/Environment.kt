@@ -9,7 +9,7 @@ import no.nav.tsm.ktor.nais.getRuntimeCluster
 
 class RuntimeConfig(val cluster: RuntimeCluster, val name: String)
 
-class PostgresConfig(val jdbc: String)
+class PostgresConfig(val jdbc: String, val migrationJdbc: String)
 
 class ExternalApi(val oppgaveApi: ExternalApiConfig, val safApi: ExternalApiConfig)
 
@@ -41,7 +41,11 @@ fun initializeEnvironment(config: ApplicationConfig): Environment {
                         hungTimeout = config.property("app.jobs.oppgaveCreator.hungTimeout").getAs(),
                     )
             ),
-        postgres = PostgresConfig(jdbc = config.property("postgres.jdbc").getString()),
+        postgres =
+            PostgresConfig(
+                jdbc = config.property("postgres.jdbc").getString(),
+                migrationJdbc = config.property("postgres.migrationJdbc").getString(),
+            ),
         external = {
             ExternalApi(
                 oppgaveApi =

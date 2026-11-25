@@ -11,7 +11,10 @@ fun createIntegrationEnvironment(postgres: PostgreSQLContainer) =
         jobs = mockk(relaxed = true),
         postgres =
             PostgresConfig(
-                jdbc = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}"
+                jdbc =
+                    "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
+                migrationJdbc =
+                    "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
             ),
         external = {
             ExternalApi(
