@@ -1,6 +1,6 @@
 package no.nav.tsm.utils
 
-import org.flywaydb.core.Flyway
+import no.nav.tsm.core.db.migrate
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.testcontainers.postgresql.PostgreSQLContainer
 
@@ -10,29 +10,11 @@ abstract class WithPostgresql protected constructor() {
         val config = createIntegrationEnvironment(postgres)
 
         fun runMigrations(clean: Boolean = false) {
-            val flyway =
-                Flyway.configure()
-                    .dataSource(
-                        config.postgres.jdbc,
-                        config.postgres.username,
-                        config.postgres.password,
-                    )
-                    .locations("db/migration")
-                    .cleanDisabled(false)
-                    .load()
-
-            if (clean) {
-                flyway.clean()
-            }
-            flyway.migrate()
+            migrate(config.postgres.jdbc, clean)
         }
 
         fun connect() {
-            Database.connect(
-                url = config.postgres.jdbc,
-                user = config.postgres.username,
-                password = config.postgres.password,
-            )
+            Database.connect(url = config.postgres.jdbc)
         }
     }
 }

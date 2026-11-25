@@ -41,10 +41,7 @@ fun initializeEnvironment(config: ApplicationConfig): Environment {
                         hungTimeout = config.property("app.jobs.oppgaveCreator.hungTimeout").getAs(),
                     )
             ),
-        postgres =
-            PostgresConfig(
-                jdbc = config.property("postgres.jdbc").getString(),
-            ),
+        postgres = PostgresConfig(jdbc = config.property("postgres.jdbc").getString()),
         external = {
             ExternalApi(
                 oppgaveApi =
